@@ -20,8 +20,8 @@ global:
  
 tests:
   quickstart-tibco-bwce-quickstartt1:
-    parameter_input: quickstart-tibco-bwce-quickstart-example-params1.json
-    template_file: quickstart-tibco-bwce-quickstart-example1.template
+    parameter_input: quickstart-tibco-bwce-quickstart-novpc-params1.json
+    template_file: quickstart-tibco-bwce-quickstart-novpc.template
   quickstart-tibco-bwce-quickstartt2:
     parameter_input: quickstart-tibco-bwce-quickstart-example-params2.json
     template_file: quickstart-tibco-bwce-quickstart-example2.template
