@@ -9,7 +9,7 @@
     "ParameterValue": "2"
 }, {
     "ParameterKey": "InstanceTypeStudioImage",
-    "ParameterValue": "m3.large"
+    "ParameterValue": "t2.large"
 }, {
     "ParameterKey": "VolSize",
     "ParameterValue": "30"

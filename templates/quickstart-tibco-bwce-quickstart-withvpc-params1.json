@@ -1,6 +1,6 @@
 [{
     "ParameterKey": "KeyName",
-    "ParameterValue": "BWCE_Keypair"
+    "ParameterValue": "$[alfred_getkeypair]"
 }, {
     "ParameterKey": "InstanceType",
     "ParameterValue": "t2.medium"
@@ -49,12 +49,6 @@
 }, {
     "ParameterKey": "AvailabilityZones",
     "ParameterValue": "$[taskcat_genaz_2]"
-}, {
-    "ParameterKey": "QSS3BucketName",
-    "ParameterValue": ""
-}, {
-    "ParameterKey": "QSS3KeyPrefix",
-    "ParameterValue": "bwce-test-bucket"
 }, {
     "ParameterKey": "NumberOfAZs",
     "ParameterValue": "2"

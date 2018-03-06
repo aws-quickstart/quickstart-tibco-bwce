@@ -73,7 +73,7 @@
         },
         "QSS3KeyPrefix": {
     		    "AllowedPattern": "^[0-9a-zA-Z-/]*$",
-    		    "Default": "quickstart-aws-vpc/",
+    		    "Default": "tibco/bwce/latest/",
     		    "Type": "String",
     		    "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
     		    "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a hyphen (-). Leave this as the default value if you are running the quickstart as is."
@@ -390,10 +390,10 @@
                     "default": "Public Subnet 2 CIDR"
                 },
                 "QSS3BucketName": {
-                  "default": "Quick Start S3 Bucket Name"
+                    "default": "Quick Start S3 Bucket Name"
                 },
                 "QSS3KeyPrefix": {
-                  "default": "Quick Start S3 Key Prefix"
+                    "default": "Quick Start S3 Key Prefix"
                 },
                 "ClusterSize": {
                     "default": "ECS Cluster Size:"
@@ -758,7 +758,7 @@
         "VPCStack": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
-                "TemplateURL": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template",
+                "TemplateURL": "https://s3.amazonaws.com/bwce-test-bucket/aws-vpc.template",
                 "Parameters": {
                     "KeyPairName": {
                         "Ref": "KeyName"
@@ -934,9 +934,6 @@
         "DefaultTargetGroup": {
             "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
             "Properties": {
-                "Name": {
-                    "Fn::Sub": "${AWS::StackName}-default"
-                },
                 "VpcId": {
                     "Fn::GetAtt": [
                         "VPCStack",
@@ -965,9 +962,6 @@
         "LoadBalancer": {
             "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
             "Properties": {
-                "Name": {
-                    "Ref": "AWS::StackName"
-                },
                 "Subnets": [
                     {
                         "Fn::GetAtt": [
@@ -1385,9 +1379,6 @@
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "Path": "/",
-                "RoleName": {
-                    "Fn::Sub": "${AWS::StackName}-ECSRole-${AWS::Region}"
-                },
                 "AssumeRolePolicyDocument": "{\n    \"Statement\": [{\n        \"Action\": \"sts:AssumeRole\",\n        \"Effect\": \"Allow\",\n        \"Principal\": { \n            \"Service\": \"ec2.amazonaws.com\" \n        }\n    }]\n}\n",
                 "Policies": [
                     {
@@ -1435,7 +1426,7 @@
         "DefaultTargetGroup": {
             "Description": "A reference to the default Target Group for Application Load Balancer.",
             "Value": {
-                "Fn::Sub": "https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#TargetGroups:search=${AWS::StackName}-default"
+                "Fn::Sub": "https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#TargetGroups:search=${AWS::StackName}"
             }
         },
         "AutoScalingGroup": {
