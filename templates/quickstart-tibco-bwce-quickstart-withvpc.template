@@ -758,7 +758,7 @@
         "VPCStack": {
             "Type": "AWS::CloudFormation::Stack",
             "Properties": {
-                "TemplateURL": "https://s3.amazonaws.com/bwce-test-bucket/aws-vpc.template",
+                "TemplateURL": "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template",
                 "Parameters": {
                     "KeyPairName": {
                         "Ref": "KeyName"

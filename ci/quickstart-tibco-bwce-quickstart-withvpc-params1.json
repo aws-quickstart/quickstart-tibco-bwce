@@ -1,6 +1,6 @@
 [{
     "ParameterKey": "KeyName",
-    "ParameterValue": "BWCE_Keypair"
+    "ParameterValue": "$[alfred_getkeypair]"
 }, {
     "ParameterKey": "InstanceType",
     "ParameterValue": "t2.medium"
