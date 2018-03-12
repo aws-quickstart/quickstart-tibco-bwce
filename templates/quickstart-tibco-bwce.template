@@ -1,4 +1,5 @@
 {
+    "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then leverages an existing VPC. \n",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
@@ -47,6 +48,15 @@
                     "Parameters": [
                         "InstMonitoring",
                         "MonInstanceType"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "AWS Quickstart Configuration"
+                    },
+                    "Parameters": [
+                        "QSS3BucketName",
+                        "QSS3KeyPrefix"
                     ]
                 }
             ],
@@ -101,6 +111,12 @@
                 },
                 "EcrRepoName": {
                     "default": "ECR Repo Name"
+                },
+                "QSS3BucketName": {
+                    "default": "Quick Start S3 Bucket Name"
+                },
+                "QSS3KeyPrefix": {
+                    "default": "Quick Start S3 Key Prefix"
                 },
                 "InstMonitoring": {
                     "default": "Install Monitoring Application?"
@@ -352,6 +368,20 @@
           ],
           "ConstraintDescription": "InstanceType must be a valid EC2 instance type."
       },
+      "QSS3BucketName": {
+          "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
+          "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+          "Default": "quickstart-reference",
+          "Description": "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+          "Type": "String"
+      },
+      "QSS3KeyPrefix": {
+          "AllowedPattern": "^[0-9a-zA-Z-/]*$",
+          "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
+          "Default": "tibco/bwce/latest/",
+          "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
+          "Type": "String"
+      },
       "PrivateSubnet1ID": {
           "Description": "ID of private subnet 1 in Availability Zone 1 for the Workload (e.g., subnet-c0236ecd)",
           "Type": "AWS::EC2::Subnet::Id"
@@ -456,37 +486,37 @@
     "Mappings": {
         "AWSRegionToAMI": {
             "us-east-1": {
-                "AMI": "ami-20bf9c5a"
+                "AMI": "ami-bb36d5c6"
             },
             "us-east-2": {
-                "AMI": "ami-7f16f405"
+                "AMI": "ami-fb5a6d9e"
             },
             "us-west-1": {
-                "AMI": "ami-7f16f405"
+                "AMI": "ami-96878ff6"
             },
             "us-west-2": {
-                "AMI": "ami-7f16f405"
+                "AMI": "ami-1273fc6a"
             },
             "eu-west-1": {
-                "AMI": "ami-7f16f405"
+                "AMI": "ami-90b0c9e9"
             },
             "eu-west-2": {
-                "AMI": "ami-7f16f405"
+                "AMI": "ami-37fc1850"
             },
             "eu-central-1": {
-                "AMI": "ami-7f16f405"
+                "AMI": "ami-b72b49d8"
             },
             "ap-northeast-1": {
-                "AMI": "ami-7f16f405"
+                "AMI": "ami-6da8d20b"
             },
             "ap-southeast-1": {
                 "AMI": "ami-19d69865"
             },
             "ap-southeast-2": {
-                "AMI": "ami-7f16f405"
+                "AMI": "ami-cfd512ad"
             },
             "ca-central-1": {
-                "AMI": "ami-7f16f405"
+                "AMI": "ami-66df5802"
             }
         }
     },
@@ -495,7 +525,7 @@
           "Type": "AWS::EC2::SecurityGroup",
           "Properties": {
               "VpcId": {
-                  "Ref": "VPC"
+                  "Ref": "VPCID"
               },
               "GroupDescription": "Access to the ECS hosts and the tasks/containers that run on them",
               "SecurityGroupIngress": [
@@ -520,7 +550,7 @@
           "Type": "AWS::EC2::SecurityGroup",
           "Properties": {
               "VpcId": {
-                  "Ref": "VPC"
+                  "Ref": "VPCID"
               },
               "GroupDescription": "Access to the BWCE Monitoring Application instance",
               "SecurityGroupIngress": [
@@ -547,7 +577,7 @@
         "Type": "AWS::EC2::SecurityGroup",
         "Properties": {
             "VpcId": {
-                "Ref": "VPC"
+                "Ref": "VPCID"
             },
             "GroupDescription": "Base security group for EC2 BusinessWorks Container Edition Instance",
             "SecurityGroupIngress": [
@@ -574,7 +604,7 @@
           "Type": "AWS::EC2::SecurityGroup",
           "Properties": {
               "VpcId": {
-                  "Ref": "VPC"
+                  "Ref": "VPCID"
               },
               "GroupDescription": "Access to the load balancer that sits in front of ECS",
               "SecurityGroupIngress": [
@@ -597,7 +627,7 @@
           "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
           "Properties": {
               "VpcId": {
-                  "Ref": "VPC"
+                  "Ref": "VPCID"
               },
               "Port": 8080,
               "Protocol": "HTTP",
@@ -616,9 +646,6 @@
       "LoadBalancer": {
           "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
           "Properties": {
-              "Name": {
-                  "Ref": "AWS::StackName"
-              },
               "Subnets": [
                   {
                       "Ref": "PublicSubnet1ID"
@@ -630,14 +657,6 @@
               "SecurityGroups": [
                   {
                       "Ref": "LoadBalancerSecurityGroup"
-                  }
-              ],
-              "Tags": [
-                  {
-                      "Key": "Name",
-                      "Value": {
-                          "Ref": "AWS::StackName"
-                      }
                   }
               ]
           }
@@ -714,8 +733,9 @@
                       "Fn::Sub": "#!/bin/bash\necho 'BWCE-AWS: Start of Monitoring Instance UserData execution...'\nexport PATH=/home/ec2-user/.local/bin:$PATH\nexport PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n\necho 'BWCE-AWS: Install Docker-ce...'\nsudo yum install -y yum-utils device-mapper-persistent-data lvm2\nsudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\nsudo yum -y install docker-ce\nsudo systemctl start docker\nsudo usermod -aG docker $USER\n\necho 'BWCE-AWS: Install Docker-Compose...'\nsudo pip install docker-compose\nsudo yum upgrade -y python*\n\necho 'BWCE-AWS: Install Monitoring Application...'\n$( aws ecr get-login --region ${AWS::Region} --no-include-email )\ncd /home/ec2-user/bwce/bwce-mon/\ndocker-compose up -d mysql_db\ndocker-compose up -d mon_app\n\nif aws ecr describe-repositories --region ${AWS::Region} --repository-names tibco-bwce-mon | grep repositoryUri; then\n    echo 'BWCE-AWS: Repository already exists, skipping repository creation...'\nelse \n    aws ecr create-repository --region ${AWS::Region} --repository-name tibco-bwce-mon\nfi\ndocker tag bwcemon_mon_app:latest ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tibco-bwce-mon:2.3.3\ndocker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tibco-bwce-mon:2.3.3\necho 'BWCE-AWS: End of Monitoring Instance UserData execution...'\n"
                   }
               }
-          },
-      "FirstEC2Instance": {
+          }
+      },
+      "InitialEC2Setup": {
           "Type": "AWS::EC2::Instance",
           "Properties": {
               "ImageId": {
@@ -745,10 +765,7 @@
               "InstanceInitiatedShutdownBehavior": "terminate",
               "SecurityGroupIds": [
                   {
-                      "Fn::GetAtt": [
-                          "VPC",
-                          "DefaultSecurityGroup"
-                      ]
+                      "Ref": "EC2SecurityGroup"
                   }
               ],
               "SubnetId": {
@@ -756,7 +773,7 @@
               },
               "UserData": {
                   "Fn::Base64": {
-                      "Fn::Sub": "#!/bin/bash\necho 'BWCE-AWS: Start of EC2 Instance UserData execution...'\nexport PATH=/home/ec2-user/.local/bin:$PATH\nexport PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\npluginListName=${PluginList}\nif [[ -n \"$pluginListName\" ]]; then\n    echo 'BWCE-AWS: Provided List of Plug-ins... ' ${PluginList}\n    for pluginName in $(echo ${PluginList} | tr ',' '\\n')\n    do\n        if [ $pluginName == 'DC' ]; then\n            echo 'BWCE-AWS: Copying DC Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/DC/TIB_bwdcp_4.5.1_v4.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwdcp_4.5.1_v4.1_bwce-runtime.zip || true\n        elif [ $pluginName == 'DCRM' ]; then\n            echo 'BWCE-AWS: Copying DCRM Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/DCRM/TIB_bwplugindynamicscrm_6.4.0_v14_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwplugindynamicscrm_6.4.0_v14_bwce-runtime.zip || true\n        elif [ $pluginName == 'MongoDB' ]; then\n            echo 'BWCE-AWS: Copying MongoDB Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/MongoDB/TIB_bwpluginmongodb_6.1.1_v1.5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginmongodb_6.1.1_v1.5_bwce-runtime.zip || true\n        elif [ $pluginName == 'SFDC' ]; then\n            echo 'BWCE-AWS: Copying SFDC Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/SFDC/TIB_bwpluginsalesforce_6.2.1_v1.3_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsalesforce_6.2.1_v1.3_bwce-runtime.zip || true\n        elif [ $pluginName == 'ServiceNow' ]; then\n            echo 'BWCE-AWS: Copying ServiceNow Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/ServiceNow/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip || true\n        elif [ $pluginName == 'MQ' ]; then\n            echo 'BWCE-AWS: Copying MQ Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/MQ/TIB_bwmq_8.5.1_v4.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwmq_8.5.1_v4.2_bwce-runtime.zip || true\n        elif [ $pluginName == 'OData' ]; then\n            echo 'BWCE-AWS: Copying OData Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/OData/TIB_bwpluginodata_6.0.1_v3.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginodata_6.0.1_v3.1_bwce-runtime.zip || true\n        elif [ $pluginName == 'AMQP' ]; then\n            echo 'BWCE-AWS: Copying AMQP Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/AMQP/TIB_bwpluginamqp_6.0.1_v5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginamqp_6.0.1_v5_bwce-runtime.zip || true\n        elif [ $pluginName == 'Kafka' ]; then\n            echo 'BWCE-AWS: Copying Kafka Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/Kafka/TIB_bwpluginkafka_6.0.0_v16.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginkafka_6.0.0_v16.2_bwce-runtime.zip || true\n        elif [ $pluginName == 'S3' ]; then\n            echo 'BWCE-AWS: Copying S3 Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/S3/TIB_bwpluginawss3_6.0.0_v9.3_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginawss3_6.0.0_v9.3_bwce-runtime.zip || true\n        fi\n    done\nelse \n    echo 'BWCE-AWS: List of Plug-ins not provided...'\nfi\n\n$( aws ecr get-login --region ${AWS::Region} --no-include-email )\nif aws ecr describe-repositories --region ${AWS::Region} --repository-names ${EcrRepoName} | grep repositoryUri; then\n    echo 'BWCE-AWS: Repository already exists, skipping repository creation...'\nelse\n    aws ecr create-repository --region ${AWS::Region} --repository-name ${EcrRepoName}\nfi\nchmod +x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\ncd /home/ec2-user/bwce/bwce-docker/\nrm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.3.zip\n./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.3.zip ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepoName}:2.3.3\ndocker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepoName}:2.3.3\n\nif [ ${ExtBucket} == 'Yes' ]; then\n    if aws s3api get-bucket-location --bucket ${ExtBucketName} | grep LocationConstraint; then\n        echo 'BWCE-AWS: S3 Bucket already exists, skipping bucket creation...'\n    else \n        aws s3api create-bucket --bucket ${ExtBucketName} --region ${AWS::Region}\n    fi\n    aws s3api put-object --bucket ${ExtBucketName} --key certs/\n    aws s3api put-object --bucket ${ExtBucketName} --key jars/\n    aws s3api put-object --bucket ${ExtBucketName} --key lib/\n    aws s3api put-object --bucket ${ExtBucketName} --key monitor-agents/\n    aws s3api put-object --bucket ${ExtBucketName} --key plugins/\n    aws s3api put-object --bucket ${ExtBucketName} --key thirdparty-installs/\nfi\necho 'BWCE-AWS: End of EC2 Instance UserData execution, shutting down...'\nsudo poweroff\n"
+                      "Fn::Sub": "#!/bin/bash\necho 'BWCE-AWS: Start of EC2 Instance UserData execution...'\nexport PATH=/home/ec2-user/.local/bin:$PATH\nexport PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n\necho 'BWCE-AWS: Install Docker-ce...'\nsudo yum install -y yum-utils device-mapper-persistent-data lvm2\nsudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\nsudo yum -y install docker-ce\nsudo systemctl start docker\nsudo usermod -aG docker $USER\n\npluginListName=${PluginList}\nif [[ -n \"$pluginListName\" ]]; then\n    echo 'BWCE-AWS: Provided List of Plug-ins... ' ${PluginList}\n    for pluginName in $(echo ${PluginList} | tr ',' '\\n')\n    do\n        if [ $pluginName == 'DC' ]; then\n            echo 'BWCE-AWS: Copying DC Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/DC/TIB_bwdcp_4.5.1_v4.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwdcp_4.5.1_v4.1_bwce-runtime.zip || true\n        elif [ $pluginName == 'DCRM' ]; then\n            echo 'BWCE-AWS: Copying DCRM Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/DCRM/TIB_bwplugindynamicscrm_6.4.0_v14_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwplugindynamicscrm_6.4.0_v14_bwce-runtime.zip || true\n        elif [ $pluginName == 'MongoDB' ]; then\n            echo 'BWCE-AWS: Copying MongoDB Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/MongoDB/TIB_bwpluginmongodb_6.1.1_v1.5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginmongodb_6.1.1_v1.5_bwce-runtime.zip || true\n        elif [ $pluginName == 'SFDC' ]; then\n            echo 'BWCE-AWS: Copying SFDC Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/SFDC/TIB_bwpluginsalesforce_6.2.1_v1.3_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsalesforce_6.2.1_v1.3_bwce-runtime.zip || true\n        elif [ $pluginName == 'ServiceNow' ]; then\n            echo 'BWCE-AWS: Copying ServiceNow Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/ServiceNow/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip || true\n        elif [ $pluginName == 'MQ' ]; then\n            echo 'BWCE-AWS: Copying MQ Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/MQ/TIB_bwmq_8.5.1_v4.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwmq_8.5.1_v4.2_bwce-runtime.zip || true\n        elif [ $pluginName == 'OData' ]; then\n            echo 'BWCE-AWS: Copying OData Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/OData/TIB_bwpluginodata_6.0.1_v3.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginodata_6.0.1_v3.1_bwce-runtime.zip || true\n        elif [ $pluginName == 'AMQP' ]; then\n            echo 'BWCE-AWS: Copying AMQP Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/AMQP/TIB_bwpluginamqp_6.0.1_v5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginamqp_6.0.1_v5_bwce-runtime.zip || true\n        elif [ $pluginName == 'Kafka' ]; then\n            echo 'BWCE-AWS: Copying Kafka Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/Kafka/TIB_bwpluginkafka_6.0.0_v16.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginkafka_6.0.0_v16.2_bwce-runtime.zip || true\n        elif [ $pluginName == 'S3' ]; then\n            echo 'BWCE-AWS: Copying S3 Plugin Runtime...'\n            cp /home/ec2-user/bwce/installers/plugins/S3/TIB_bwpluginawss3_6.0.0_v9.3_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginawss3_6.0.0_v9.3_bwce-runtime.zip || true\n        fi\n    done\nelse \n    echo 'BWCE-AWS: List of Plug-ins not provided...'\nfi\n\n$( aws ecr get-login --region ${AWS::Region} --no-include-email )\nif aws ecr describe-repositories --region ${AWS::Region} --repository-names ${EcrRepoName} | grep repositoryUri; then\n    echo 'BWCE-AWS: Repository already exists, skipping repository creation...'\nelse\n    aws ecr create-repository --region ${AWS::Region} --repository-name ${EcrRepoName}\nfi\n chmod -x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\ncd /home/ec2-user/bwce/bwce-docker/\nrm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.3.zip\n./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.3.zip tibco/bwce:2.3.3\nif aws ecr describe-repositories --region ${AWS::Region} --repository-names tibco-bwce | grep repositoryUri; then\n    echo 'BWCE-AWS: Repository already exists, skipping repository creation...'\nelse \n    aws ecr create-repository --region ${AWS::Region} --repository-name tibco-bwce\nfi\ndocker tag tibco/bwce:2.3.3 ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tibco-bwce:2.3.3\ndocker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tibco-bwce:2.3.3\nif [ ${ExtBucket} == 'Yes' ]; then\n    if aws s3api get-bucket-location --bucket ${ExtBucketName} | grep LocationConstraint; then\n        echo 'BWCE-AWS: S3 Bucket already exists, skipping bucket creation...'\n    else \n        aws s3 mb s3://${ExtBucketName}\n    fi\n    aws s3api put-object --bucket ${ExtBucketName} --key certs/\n    aws s3api put-object --bucket ${ExtBucketName} --key jars/\n    aws s3api put-object --bucket ${ExtBucketName} --key lib/\n    aws s3api put-object --bucket ${ExtBucketName} --key monitor-agents/\n    aws s3api put-object --bucket ${ExtBucketName} --key plugins/\n    aws s3api put-object --bucket ${ExtBucketName} --key thirdparty-installs/\nfi\necho 'BWCE-AWS: End of EC2 Instance UserData execution, shutting down...'\nsudo poweroff\n"
                   }
               }
           }
@@ -796,22 +813,21 @@
                   "Ref": "PublicSubnet1ID"
               },
               "Tags": [
-                 {
-                  "Key": "Name",
-                  "Value": {
-                      "Fn::Sub": "${AWS::StackName} - BWCE Studio"
-                           }
-                       }
-                   ],
+                  {
+                      "Key": "Name",
+                      "Value": {
+                          "Fn::Sub": "${AWS::StackName} - BWCE Studio"
+                      }
+                  }
+              ],
 
               "UserData": {
                   "Fn::Base64": {
-                      "Fn::Sub": "#!/bin/bash\nyum update -y\nyum groupinstall -y 'GNOME Desktop' 'Graphical Administration Tools'\nyum install -y tigervnc-server xorg-x11-fonts-Type1\ncp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:5.service\nsed -i -e 's/<USER>/ec2-user/g' /etc/systemd/system/vncserver@:5.service\nmkdir '/home/ec2-user/bwce/bwce-studio'\nmkdir '/home/ec2-user/bwce/installers/bwce/BWCE-install'\nunzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.3.3_linux26gl23_x86_64.zip' -d '/home/ec2-user/bwce/installers/bwce/BWCE-install'\nsed -i -e 's/\/opt\/tibco\/bwce/\/home\/ec2-user\/bwce\/bwce-studio/' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.3.3.silent\ncd /home/ec2-user/bwce/installers/bwce/BWCE-install\n./TIBCOUniversalInstaller-lnx-x86-64.bin -silent\nmkdir -p '/home/ec2-user/.vnc'\nchmod 777 '/home/ec2-user/.vnc'\nrunuser -l ec2-user -c 'vncpasswd -f <<<${AWS::StackName} > '/home/ec2-user/.vnc/passwd''\nrunuser -l ec2-user -c 'chmod 600 '/home/ec2-user/.vnc/passwd''\nrunuser -l ec2-user -c 'vncserver'\nsystemctl daemon-reload\nsystemctl start vncserver@:5.service\nsystemctl enable vncserver@:5.service"
+                      "Fn::Sub": "#!/bin/bash\nyum update -y\necho 'BWCE-AWS: Install Docker-ce...'\nyum install -y yum-utils device-mapper-persistent-data lvm2\nyum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\nyum -y install docker-ce\nsystemctl start docker\nusermod -aG docker ec2-user\nyum groupinstall -y 'GNOME Desktop' 'Graphical Administration Tools'\nyum install -y tigervnc-server xorg-x11-fonts-Type1\ncp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:5.service\nsed -i -e 's/<USER>/ec2-user/g' /etc/systemd/system/vncserver@:5.service\nmkdir '/home/ec2-user/bwce/bwce-studio'\nchmod 755 '/home/ec2-user/bwce/bwce-studio' \nmkdir '/home/ec2-user/bwce/installers/bwce/BWCE-install'\nunzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.3.3_linux26gl23_x86_64.zip' -d '/home/ec2-user/bwce/installers/bwce/BWCE-install'\nsed -i -e 's#/opt/tibco/bwce#/home/ec2-user/bwce/bwce-studio#g' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.3.3.silent\ncd /home/ec2-user/bwce/installers/bwce/BWCE-install\n./TIBCOUniversalInstaller-lnx-x86-64.bin -silent\nmkdir -p '/home/ec2-user/.vnc'\nchmod 777 '/home/ec2-user/.vnc'\nrunuser -l ec2-user -c 'vncpasswd -f <<<${AWS::StackName} > '/home/ec2-user/.vnc/passwd''\nrunuser -l ec2-user -c 'chmod 600 '/home/ec2-user/.vnc/passwd''\nrunuser -l ec2-user -c 'vncserver'\nsystemctl daemon-reload\nsystemctl start vncserver@:5.service\nsystemctl enable vncserver@:5.service"
                   }
               }
           }
       },
-
       "ECSCluster": {
           "Type": "AWS::ECS::Cluster",
           "Properties": {
@@ -869,7 +885,6 @@
       },
       "ECSLaunchConfiguration": {
           "Type": "AWS::AutoScaling::LaunchConfiguration",
-          "DependsOn": "InternetGatewayAttachment",
           "Properties": {
               "ImageId": {
                   "Fn::FindInMap": [
@@ -924,53 +939,53 @@
               "UserData": {
                   "Fn::Base64": {
                       "Fn::Sub": "#!/bin/bash\necho ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config\necho ECS_CHECKPOINT=false >> /etc/ecs/ecs.config\necho ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=8m >> /etc/ecs/ecs.config\necho ECS_DISABLE_IMAGE_CLEANUP=false >> /etc/ecs/ecs.config\necho ECS_IMAGE_CLEANUP_INTERVAL=15m >> /etc/ecs/ecs.config\necho ECS_IMAGE_MINIMUM_CLEANUP_AGE=1h >> /etc/ecs/ecs.config\necho ECS_NUM_IMAGES_DELETE_PER_CYCLE=5 >> /etc/ecs/ecs.config\nsudo systemctl enable docker-container@ecs-agent.service\nsudo systemctl start docker-container@ecs-agent.service\n/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration\n/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup\nexport PATH=/home/ec2-user/.local/bin:$PATH\nexport PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n$( aws ecr get-login --region ${AWS::Region} --no-include-email )\n"
-                    }
-                 }
+                  }
               }
           },
-          "Metadata": {
-              "AWS::CloudFormation::Init": {
-                  "config": {
-                      "commands": {
-                          "01_add_instance_to_cluster": {
-                              "command": {
-                                  "Fn::Sub": "echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config"
+              "Metadata": {
+                  "AWS::CloudFormation::Init": {
+                      "config": {
+                          "commands": {
+                              "01_add_instance_to_cluster": {
+                                  "command": {
+                                      "Fn::Sub": "echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config"
+                                  }
+                              },
+                              "02_add_instance_to_cluster": {
+                                  "command": "echo ECS_CHECKPOINT=false >> /etc/ecs/ecs.config"
+                              },
+                              "03_add_instance_to_cluster": {
+                                  "command": "echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=10m >> /etc/ecs/ecs.config"
+                              },
+                              "04_add_instance_to_cluster": {
+                                  "command": "echo ECS_DISABLE_IMAGE_CLEANUP=false >> /etc/ecs/ecs.config"
                               }
                           },
-                          "02_add_instance_to_cluster": {
-                              "command": "echo ECS_CHECKPOINT=false >> /etc/ecs/ecs.config"
-                          },
-                          "03_add_instance_to_cluster": {
-                              "command": "echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=10m >> /etc/ecs/ecs.config"
-                          },
-                          "04_add_instance_to_cluster": {
-                              "command": "echo ECS_DISABLE_IMAGE_CLEANUP=false >> /etc/ecs/ecs.config"
-                          }
-                      },
-                      "files": {
-                          "/etc/cfn/cfn-hup.conf": {
-                              "mode": 256,
-                              "owner": "root",
-                              "group": "root",
-                              "content": {
-                                  "Fn::Sub": "[main]\nstack=${AWS::StackId}\nregion=${AWS::Region}\n"
+                          "files": {
+                              "/etc/cfn/cfn-hup.conf": {
+                                  "mode": 256,
+                                  "owner": "root",
+                                  "group": "root",
+                                  "content": {
+                                      "Fn::Sub": "[main]\nstack=${AWS::StackId}\nregion=${AWS::Region}\n"
+                                  }
+                              },
+                              "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
+                                  "content": {
+                                      "Fn::Sub": "[cfn-auto-reloader-hook]\ntriggers=post.update\npath=Resources.ContainerInstances.Metadata.AWS::CloudFormation::Init\naction=/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration\n"
+                                  }
                               }
                           },
-                          "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
-                              "content": {
-                                  "Fn::Sub": "[cfn-auto-reloader-hook]\ntriggers=post.update\npath=Resources.ContainerInstances.Metadata.AWS::CloudFormation::Init\naction=/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration\n"
-                              }
-                          }
-                      },
-                      "services": {
-                          "sysvinit": {
-                              "cfn-hup": {
-                                  "enabled": true,
-                                  "ensureRunning": true,
-                                  "files": [
-                                      "/etc/cfn/cfn-hup.conf",
-                                      "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
-                                  ]
+                          "services": {
+                              "sysvinit": {
+                                  "cfn-hup": {
+                                      "enabled": true,
+                                      "ensureRunning": true,
+                                      "files": [
+                                          "/etc/cfn/cfn-hup.conf",
+                                          "/etc/cfn/hooks.d/cfn-auto-reloader.conf"
+                                      ]
+                                  }
                               }
                           }
                       }
@@ -1056,6 +1071,18 @@
                       "Not Applicable"
                   ]
               }
+          },
+          "MonitoringURL": {
+              "Description": "Monitoring Application URL",
+              "Value": {
+                  "Fn::If": [
+                      "InstallMonitoringApp",
+                      {
+                          "Fn::Sub": "http://${MonitoringInstance.PublicIp}:8080/"
+                      },
+                      "Not Applicable"
+                  ]
+              }
           }
-      }
+     }
 }
