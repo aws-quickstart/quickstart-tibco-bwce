@@ -484,7 +484,7 @@
         }
     },
     "Mappings": {
-        "AWSRegionToAMI": {
+        "AWSAMIRegionMap": {
             "us-east-1": {
                 "AMI": "ami-bb36d5c6"
             },
@@ -685,7 +685,7 @@
           "Properties": {
               "ImageId": {
                   "Fn::FindInMap": [
-                      "AWSRegionToAMI",
+                      "AWSAMIRegionMap",
                       {
                           "Ref": "AWS::Region"
                       },
@@ -740,7 +740,7 @@
           "Properties": {
               "ImageId": {
                   "Fn::FindInMap": [
-                      "AWSRegionToAMI",
+                      "AWSAMIRegionMap",
                       {
                           "Ref": "AWS::Region"
                       },
@@ -783,7 +783,7 @@
           "Properties": {
               "ImageId": {
                   "Fn::FindInMap": [
-                      "AWSRegionToAMI",
+                      "AWSAMIRegionMap",
                         {
                             "Ref": "AWS::Region"
                         },
@@ -888,7 +888,7 @@
           "Properties": {
               "ImageId": {
                   "Fn::FindInMap": [
-                      "AWSRegionToAMI",
+                      "AWSAMIRegionMap",
                       {
                           "Ref": "AWS::Region"
                       },
