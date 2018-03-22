@@ -13,34 +13,34 @@
         "CIDRBlockCluster": {
             "Description": "CIDR block for the VPC",
             "Type": "String",
-            "Default": "10.180.0.0/16",
+            "Default": "10.0.0.0/16",
             "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
             "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28"
         },
         "PublicSubnet1CIDR": {
             "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
-            "Default": "10.180.2.0/21",
+            "Default": "10.0.128.0/20",
             "Type": "String",
             "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
             "Description": "CIDR Block for the public subnet running your Monitoring Application"
         },
         "PublicSubnet2CIDR": {
             "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
-            "Default": "10.180.8.0/21",
+            "Default": "10.0.144.0/20",
             "Type": "String",
             "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
             "Description": "CIDR Block for the public subnet 2"
         },
         "PrivateSubnet1CIDR": {
             "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
-            "Default": "10.180.24.0/21",
+            "Default": "10.0.0.0/19",
             "Type": "String",
             "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
             "Description": "CIDR block for private subnet 1."
         },
         "PrivateSubnet2CIDR": {
             "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
-            "Default": "10.180.32.0/21",
+            "Default": "10.0.32.0/19",
             "Type": "String",
             "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
             "Description": "CIDR block for private subnet 2."
@@ -197,12 +197,6 @@
             "Default": "No",
             "ConstraintDescription": "The value should be Yes/No."
         },
-        "ExtBucketName": {
-            "Description": "Provide name for S3 bucket to be created, if you selected the previous option as 'Yes'.",
-            "Type": "String",
-            "MaxLength": 63,
-            "ConstraintDescription": "Must comply with AWS S3 bucket naming convention."
-        },
         "PluginList": {
             "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC,MongoDB,S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), Kafka (Plug-in for Apache Kafka), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com).",
             "Type": "String"
@@ -342,8 +336,7 @@
                     "Parameters": [
                         "EcrRepoName",
                         "PluginList",
-                        "ExtBucket",
-                        "ExtBucketName"
+                        "ExtBucket"
                     ]
                 },
                 {
@@ -404,9 +397,6 @@
                 },
                 "ExtBucket": {
                     "default": "Create S3 Bucket for Base Image Customization?"
-                },
-                "ExtBucketName": {
-                    "default": "S3 Bucket Name:"
                 },
                 "PluginList": {
                     "default": "List of Plug-ins:"
@@ -629,7 +619,7 @@
                             "Outputs.VPCID"
                         ]
                     },
-                    "VPCCIDR": {
+                    "CIDRBlockCluster": {
                         "Ref": "CIDRBlockCluster"
                     },
                     "AdminIngressLocation": {
@@ -658,9 +648,6 @@
                     },
                     "ExtBucket": {
                         "Ref": "ExtBucket"
-                    },
-                    "ExtBucketName": {
-                        "Ref": "ExtBucketName"
                     },
                     "InstMonitoring": {
                         "Ref": "InstMonitoring"

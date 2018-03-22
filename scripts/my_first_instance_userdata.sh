@@ -13,7 +13,7 @@ sudo usermod -aG docker $USER
 pluginListName=${PluginList}
 if [[ -n \"$pluginListName\" ]]; then
       echo 'BWCE-AWS: Provided List of Plug-ins... ' ${PluginList}
-          for pluginName in $(echo ${PluginList} | tr ',' '\\n')
+          for pluginName in $(echo ${PluginList} | tr ', ' '\\n')
               do
                         if [ $pluginName == 'DC' ]; then
                                       echo 'BWCE-AWS: Copying DC Plugin Runtime...'
@@ -52,35 +52,22 @@ if [[ -n \"$pluginListName\" ]]; then
 fi
 
 $( aws ecr get-login --region ${AWS::Region} --no-include-email )
-if aws ecr describe-repositories --region ${AWS::Region} --repository-names ${EcrRepoName} | grep repositoryUri; then
-      echo 'BWCE-AWS: Repository already exists, skipping repository creation...'
-    else
-          aws ecr create-repository --region ${AWS::Region} --repository-name ${EcrRepoName}
-fi
 
 chmod -x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh
-cd /home/ec2-user/bwce/bwce-docker/\nrm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.3.zip
+cd /home/ec2-user/bwce/bwce-docker/
+rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.3.zip
 ./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.3.zip tibco/bwce:2.3.3
 
-if aws ecr describe-repositories --region ${AWS::Region} --repository-names tibco-bwce | grep repositoryUri; then
-      echo 'BWCE-AWS: Repository already exists, skipping repository creation...'
-    else
-          aws ecr create-repository --region ${AWS::Region} --repository-name tibco-bwce
-fi
+docker tag tibco/bwce:2.3.3 ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepoName}:2.3.3
+docker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepoNmae}:2.3.3
 
-docker tag tibco/bwce:2.3.3 ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tibco-bwce:2.3.3\ndocker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tibco-bwce:2.3.3
 if [ ${ExtBucket} == 'Yes' ]; then
-      if aws s3api get-bucket-location --bucket ${ExtBucketName} | grep LocationConstraint; then
-                echo 'BWCE-AWS: S3 Bucket already exists, skipping bucket creation...'
-                  else
-                            aws s3 mb s3://${ExtBucketName}
-      fi
-      aws s3api put-object --bucket ${ExtBucketName} --key certs/
-      aws s3api put-object --bucket ${ExtBucketName} --key jars/
-      aws s3api put-object --bucket ${ExtBucketName} --key lib/
-      aws s3api put-object --bucket ${ExtBucketName} --key monitor-agents/
-      aws s3api put-object --bucket ${ExtBucketName} --key plugins/
-      aws s3api put-object --bucket ${ExtBucketName} --key thirdparty-installs/
+      aws s3api put-object --bucket ", { "Ref" : "BWCEArtifactsBucket" }, " --key certs/
+      aws s3api put-object --bucket ", { "Ref" : "BWCEArtifactsBucket" }, " --key jars/
+      aws s3api put-object --bucket ", { "Ref" : "BWCEArtifactsBucket" }, " --key lib/
+      aws s3api put-object --bucket ", { "Ref" : "BWCEArtifactsBucket" }, " --key monitor-agents/
+      aws s3api put-object --bucket ", { "Ref" : "BWCEArtifactsBucket" }, " --key plugins/
+      aws s3api put-object --bucket ", { "Ref" : "BWCEArtifactsBucket" }, " --key thirdparty-installs/
 fi
 echo 'BWCE-AWS: End of EC2 Instance UserData execution, shutting down...'
 sudo poweroff
