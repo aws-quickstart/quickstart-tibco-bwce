@@ -621,6 +621,7 @@
         },
         "BWCEArtifactsBucket": {
             "Type": "AWS::S3::Bucket",
+            "Condition": "CreateS3Bucket",
             "DeletionPolicy": "Retain",
             "Properties": {
                 "AccessControl": "PublicReadWrite"
@@ -802,7 +803,7 @@
                                 "pluginListName=", { "Ref" : "PluginList"}, "\n",
                                 "if [[ -n \"$pluginListName\" ]]; then\n",
                                 "    echo 'BWCE-AWS: Provided List of Plug-ins... ' ", { "Ref" : "PluginList"}, "\n",
-                                "    for pluginName in $(echo ", { "Ref" : "PluginList"}, " | tr ', ' '\\n')\n",
+                                "    for pluginName in $(echo ", { "Ref" : "PluginList"}, " | tr ',' '\\n')\n",
                                 "    do\n",
                                 "        if [ $pluginName == 'DC' ]; then\n",
                                 "           echo 'BWCE-AWS: Copying DC Plugin Runtime...'\n",
@@ -841,13 +842,13 @@
                                 "fi\n",
                                 "\n",
                                 "$( aws ecr get-login --region ", { "Ref" : "AWS::Region" }, " --no-include-email )\n",
-                                "sudo chmod -x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\n",
+                                "sudo chmod +x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\n",
                                 "cd /home/ec2-user/bwce/bwce-docker/\n",
                                 "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.3.zip\n",
                                 "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.3.zip tibco/bwce:2.3.3\n",
                                 "docker tag tibco/bwce:2.3.3 ",{ "Ref": "AWS::AccountId"}, ".dkr.ecr.", { "Ref" : "AWS::Region" }, ".amazonaws.com/", { "Ref": "EcrRepoName" }, ":2.3.3\n",
                                 "docker push ",{ "Ref": "AWS::AccountId"}, ".dkr.ecr.", { "Ref" : "AWS::Region" }, ".amazonaws.com/", { "Ref": "EcrRepoName" }, ":2.3.3\n",
-                                "if [ ," { "Ref" : "ExtBucket"}, " == 'Yes' ]; then\n",
+                                "if [ ", { "Ref" : "ExtBucket" }, " == 'Yes' ]; then\n",
                                 "    aws s3api put-object --bucket ", { "Ref" : "BWCEArtifactsBucket" }, " --key certs/\n",
                                 "    aws s3api put-object --bucket ", { "Ref" : "BWCEArtifactsBucket" }, " --key jars/\n",
                                 "    aws s3api put-object --bucket ", { "Ref" : "BWCEArtifactsBucket" }, " --key lib/\n",
@@ -1100,7 +1101,6 @@
                                 {
                                     "Effect": "Allow",
                                     "Action": [
-                                        "ecs:*",
                                         "ecs:DeregisterContainerInstance",
                                         "ecs:DiscoverPollEndpoint",
                                         "ecs:Poll",
@@ -1128,7 +1128,11 @@
                                         "ecr:GetRepositoryPolicy",
                                         "ecr:DescribeRepository",
                                         "ecr:ListImages",
-                                        "ecr:BatchGetImage"
+                                        "ecr:BatchGetImage",
+                                        "ecr:InitiateLayerUpload",
+                                        "ecr:UploadLayerPart",
+                                        "ecr:CompleteLayerUpload",
+                                        "ecr:PutImage"
                                     ],
                                     "Resource": "*"
                                 }
@@ -1181,7 +1185,7 @@
                                     "Effect": "Allow",
                                     "Action": [
                                         "aws-marketplace:MeterUsage",
-                                        "ec2:AuthorizeSecurityGroupIngress",
+                                        "ec2:CreateTags*",
                                         "ec2:Describe*"
                                     ],
                                     "Resource": "*"
@@ -1203,7 +1207,18 @@
                                         "s3:DeleteObject",
                                         "s3:ListObject"
                                     ],
-                                    "Resource": "*"
+                                    "Resource": {
+                                        "Fn::Join": [
+                                            "",
+                                            [
+                                                "arn:aws:s3:::",
+                                                {
+                                                    "Ref": "BWCEArtifactsBucket"
+                                                },
+                                                "/*"
+                                            ]
+                                        ]
+                                    }
                                 }
                             ]
                         }
@@ -1233,7 +1248,10 @@
         "LoadBalancer": {
             "Description": "A reference to the Application Load Balancer.",
             "Value": {
-                "Fn::Sub": "https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#LoadBalancers:search=${AWS::StackName}"
+                "Fn::GetAtt": [
+                    "LoadBalancer",
+                    "DNSName"
+                ]
             }
         },
         "DefaultTargetGroup": {
