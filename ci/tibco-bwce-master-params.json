@@ -1,0 +1,74 @@
+[
+    {
+        "ParameterKey": "KeyName",
+        "ParameterValue": "$[alfred_getkeypair]"
+    },
+    {
+        "ParameterKey": "InstanceType",
+        "ParameterValue": "t2.medium"
+    },
+    {
+        "ParameterKey": "ClusterSize",
+        "ParameterValue": "2"
+    },
+    {
+        "ParameterKey": "InstanceTypeStudioImage",
+        "ParameterValue": "t2.large"
+    },
+    {
+        "ParameterKey": "VolSize",
+        "ParameterValue": "30"
+    },
+    {
+        "ParameterKey": "VolSizeStudioImage",
+        "ParameterValue": "40"
+    },
+    {
+        "ParameterKey": "EcrRepoName",
+        "ParameterValue": "$[taskcat_random-string]"
+    },
+    {
+        "ParameterKey": "ExtBucket",
+        "ParameterValue": "No"
+    },
+    {
+        "ParameterKey": "PluginList",
+        "ParameterValue": "DC"
+    },
+    {
+        "ParameterKey": "CIDRBlockCluster",
+        "ParameterValue": "10.180.0.0/16"
+    },
+    {
+        "ParameterKey": "PublicSubnet1CIDR",
+        "ParameterValue": "10.180.2.0/21"
+    },
+    {
+        "ParameterKey": "PublicSubnet2CIDR",
+        "ParameterValue": "10.180.8.0/21"
+    },
+    {
+        "ParameterKey": "PrivateSubnet1CIDR",
+        "ParameterValue": "10.180.24.0/21"
+    },
+    {
+        "ParameterKey": "PrivateSubnet2CIDR",
+        "ParameterValue": "10.180.32.0/21"
+    },
+    {
+        "ParameterKey": "AdminIngressLocation",
+        "ParameterValue": "0.0.0.0/0"
+    },
+    {
+        "ParameterKey": "AvailabilityZones",
+        "ParameterValue": "$[taskcat_genaz_2]"
+    },
+    {
+        "ParameterKey": "InstMonitoring",
+        "ParameterValue": "Yes"
+    },
+    {
+        "ParameterKey": "MonInstanceType",
+        "ParameterValue": "t2.medium"
+    }
+]
