@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "TIBCO BWCE 2.3.3. This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then deploys a VPC, with a pair of public and private subnets spread across two Availabilty Zones. It deploys an Internet Gateway, with a default route on the public subnets. It deploys a pair of NAT Gateways (one in each AZ), and default routes for them in the private subnets. It then deploys a highly available ECS cluster of EC2 instances (ECS Hosts) launched from the TIBCO BWCE AMI in an AutoScaling Group,  with the EC2 instances distributed across multiple Availability Zones. This template also provides you an option to create an S3 bucket and folder structure inside the bucket required for base docker image customization. This template also provides you an option to install BWCE Monitoring Application.\n",
+    "Description": "TIBCO BWCE 2.3.3. This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then deploys a VPC, with a pair of public and private subnets spread across two Availabilty Zones. It deploys an Internet Gateway, with a default route on the public subnets. It deploys a pair of NAT Gateways (one in each AZ), and default routes for them in the private subnets. It then deploys a highly available ECS cluster of EC2 instances (ECS Hosts) launched from the TIBCO BWCE AMI in an AutoScaling Group,  with the EC2 instances distributed across multiple Availability Zones. This template also provides you an option to create an S3 bucket and folder structure inside the bucket required for base docker image customization. This template also provides you an option to install BWCE Monitoring Application. License: Apache 2.0 (Please do not remove) Apr,2,2018 (qs-1oalbg1k4)",
     "Parameters": {
         "ClusterSize": {
             "Description": "Number of EC2 instances to be created initially in the ECS Cluster (1-1000). This value will be used to set the Min, Max & Desired count of instances in the Auto Scaling Group.",
@@ -179,6 +179,13 @@
             "MinValue": 40,
             "ConstraintDescription": "VolSizeStudioImage must be numeric and between 40 and 100."
         },
+        "StudioPassword": {
+            "Description": "Password to access the BWCE studio via VNC",
+            "Type": "String",
+            "MinLength": 1,
+            "MaxLength": 8,
+            "ConstraintDescription": "This password needs to be set in order to access your BWCE studio instance. The max length of this password is 8 characters."
+        },
         "KeyName": {
             "Description": "Select an existing key pair. You must provide existing key pair to be able to SSH into EC2 instances.",
             "Type": "AWS::EC2::KeyPair::KeyName",
@@ -326,6 +333,7 @@
                         "InstanceType",
                         "VolSize",
                         "InstanceTypeStudioImage",
+                        "StudioPassword",
                         "VolSizeStudioImage"
                     ]
                 },
@@ -385,6 +393,9 @@
                 },
                 "VolSize": {
                     "default": "ECS Cluster Volume Size:"
+                },
+                "StudioPassword": {
+                    "default": "Studio Password:"
                 },
                 "InstanceTypeStudioImage": {
                     "default": "Studio EC2 Instance Type:"
@@ -567,7 +578,7 @@
             "Properties": {
                 "TemplateURL": {
                     "Fn::Sub": [
-                        "https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}templates/quickstart-tibco-bwce.template",
+                        "https://${QSS3BucketName}.${QSS3Region}.amazonaws.com/${QSS3KeyPrefix}templates/tibco-bwce.template",
                         {
                             "QSS3Region": {
                                 "Fn::If": [
@@ -639,6 +650,9 @@
                     },
                     "VolSizeStudioImage": {
                         "Ref": "VolSizeStudioImage"
+                    },
+                    "StudioPassword": {
+                        "Ref": "StudioPassword"
                     },
                     "EcrRepoName": {
                         "Ref": "EcrRepoName"

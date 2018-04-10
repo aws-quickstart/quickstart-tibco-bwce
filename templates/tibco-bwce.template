@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then leverages an existing VPC. \n",
+    "Description": "This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then leverages an existing VPC. License: Apache 2.0 (Please do not remove) Apr,2,2018 (qs-1oalbg1k9)",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -27,6 +27,7 @@
                         "InstanceType",
                         "VolSize",
                         "InstanceTypeStudioImage",
+                        "StudioPassword",
                         "VolSizeStudioImage",
                         "KeyName"
                     ]
@@ -94,6 +95,9 @@
                 "InstanceTypeStudioImage": {
                     "default": "Studio EC2 Instance Type:"
                 },
+                "StudioPassword": {
+                    "default": "Studio Password:"
+                },
                 "VolSizeStudioImage": {
                     "default": "Studio EC2 Volume Size:"
                 },
@@ -124,14 +128,14 @@
             }
         }
     },
-    "Parameters":{
+    "Parameters": {
         "ClusterSize": {
-            "Description": "Number of EC2 instances to be created initially in the ECS Cluster (1-1000). This value will be used to set the Min, Max & Desired count of instances in the Auto Scaling Group.",
+            "Description": "Number of EC2 instances to be created initially in the ECS Cluster (1-100). This value will be used to set the Min, Max & Desired count of instances in the Auto Scaling Group.",
             "Type": "Number",
             "Default": 2,
-            "MaxValue": 1000,
+            "MaxValue": 100,
             "MinValue": 1,
-            "ConstraintDescription": "ClusterSize must be numeric and between 1 and 1000."
+            "ConstraintDescription": "ClusterSize must be numeric and between 1 and 100."
         },
         "InstanceType": {
             "Description": "Select an instance type for EC2 instances to be created in the ECS cluster.",
@@ -208,7 +212,7 @@
             "Description": "Select an instance type that runs your BusinessWorks Container Edition studio.",
             "Type": "String",
             "Default": "m3.large",
-            "AllowedValues":[
+            "AllowedValues": [
                 "t2.large",
                 "t2.xlarge",
                 "t2.2xlarge",
@@ -241,13 +245,20 @@
             "MinValue": 30,
             "ConstraintDescription": "VolumeSize must be numeric and between 30 and 16384."
         },
-        "VolSizeStudioImage":{
+        "VolSizeStudioImage": {
             "Description": "Volume Size  (GB) for EC2 instance running BusinessWorks Container Edition studio.",
             "Type": "Number",
             "Default": 40,
             "MaxValue": 100,
             "MinValue": 40,
             "ConstraintDescription": "VolSizeStudioImage must be numeric and between 40 and 100."
+        },
+        "StudioPassword": {
+            "Description": "Password to access the BWCE studio via VNC",
+            "Type": "String",
+            "MinLength": 1,
+            "MaxLength": 8,
+            "ConstraintDescription": "This password needs to be set in order to access your BWCE studio instance. The max length of this password is 8 characters."
         },
         "KeyName": {
             "Description": "Select an existing key pair. You must provide existing key pair to be able to SSH into EC2 instances.",
@@ -402,18 +413,6 @@
         }
     },
     "Conditions": {
-        "HasKeyName": {
-            "Fn::Not": [
-                {
-                    "Fn::Equals": [
-                        {
-                            "Ref": "KeyName"
-                        },
-                        ""
-                    ]
-                }
-            ]
-        },
         "CreateS3Bucket": {
             "Fn::Equals": [
                 {
@@ -606,7 +605,9 @@
                         "CidrIp": {
                             "Ref": "AdminIngressLocation"
                         },
-                        "IpProtocol": -1
+                        "IpProtocol": "tcp",
+                        "FromPort": "8080",
+                        "ToPort": "8080"
                     }
                 ],
                 "Tags": [
@@ -630,6 +631,13 @@
                 "RepositoryName": {
                     "Ref": "EcrRepoName"
                 }
+            }
+        },
+        "MonitoringRepository": {
+            "Type": "AWS::ECR::Repository",
+            "Condition": "InstallMonitoringApp",
+            "Properties": {
+                "RepositoryName": "mon-repo-233"
             }
         },
         "DefaultTargetGroup": {
@@ -704,17 +712,6 @@
                 "InstanceType": {
                     "Ref": "MonInstanceType"
                 },
-                "KeyName": {
-                    "Fn::If": [
-                        "HasKeyName",
-                        {
-                            "Ref": "KeyName"
-                        },
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
                 "IamInstanceProfile": {
                     "Ref": "ECSInstanceProfile"
                 },
@@ -739,7 +736,126 @@
                 ],
                 "UserData": {
                     "Fn::Base64": {
-                        "Fn::Sub": "#!/bin/bash\necho 'BWCE-AWS: Start of Monitoring Instance UserData execution...'\nexport PATH=/home/ec2-user/.local/bin:$PATH\nexport PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n\necho 'BWCE-AWS: Install Docker-ce...'\nsudo yum install -y yum-utils device-mapper-persistent-data lvm2\nsudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\nsudo yum -y install docker-ce\nsudo systemctl start docker\nsudo usermod -aG docker $USER\n\necho 'BWCE-AWS: Install Docker-Compose...'\nsudo pip install docker-compose\nsudo yum upgrade -y python*\n\necho 'BWCE-AWS: Install Monitoring Application...'\n$( aws ecr get-login --region ${AWS::Region} --no-include-email )\ncd /home/ec2-user/bwce/bwce-mon/\ndocker-compose up -d mysql_db\ndocker-compose up -d mon_app\n\nif aws ecr describe-repositories --region ${AWS::Region} --repository-names tibco-bwce-mon | grep repositoryUri; then\n    echo 'BWCE-AWS: Repository already exists, skipping repository creation...'\nelse \n    aws ecr create-repository --region ${AWS::Region} --repository-name tibco-bwce-mon\nfi\ndocker tag bwcemon_mon_app:latest ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tibco-bwce-mon:2.3.3\ndocker push ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/tibco-bwce-mon:2.3.3\necho 'BWCE-AWS: End of Monitoring Instance UserData execution...'\n"
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash\n",
+                                "echo 'BWCE-AWS: Start of Monitoring Instance UserData execution...'\n",
+                                "export PATH=/home/ec2-user/.local/bin:$PATH\n",
+                                "export PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n",
+                                "\n",
+                                "echo 'BWCE-AWS: Install Docker-ce...'\n",
+                                "sudo yum install -y yum-utils device-mapper-persistent-data lvm2\n",
+                                "sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n",
+                                "sudo yum -y install docker-ce\n",
+                                "sudo systemctl start docker\n",
+                                "sudo usermod -aG docker $USER\n",
+                                "\n",
+                                "echo 'BWCE-AWS: Install Docker-Compose...'\n",
+                                "sudo pip install docker-compose\n",
+                                "sudo yum upgrade -y python*\n",
+                                "\n",
+                                "echo 'BWCE-AWS: Install Monitoring Application...'\n",
+                                {
+                                    "Fn::Sub": "$( aws ecr get-login --region ${AWS::Region} --no-include-email )"
+                                },
+                                "\n",
+                                "cd /home/ec2-user/bwce/bwce-mon/\n",
+                                "docker-compose up -d mysql_db\n",
+                                "docker-compose up -d mon_app\n",
+                                "\n",
+                                "/opt/aws/bin/cfn-init -v --stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " --resource MonitoringInstance --configsets ",
+                                {
+                                    "Fn::If": [
+                                        "InstallMonitoringApp",
+                                        "quickstartwithMonRepo",
+                                        "endMessage"
+                                    ]
+                                },
+                                "\n",
+                                "echo 'BWCE-AWS: End of Monitoring Instance UserData execution...'\n"
+                            ]
+                        ]
+                    }
+                }
+            },
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "configSets": {
+                        "quickstartwithMonRepo": [
+                            "MonRepoCreation",
+                            "endMessage"
+                        ],
+                        "cfnInitEnd": [
+                            "endMessage"
+                        ]
+                    },
+                    "MonRepoCreation": {
+                        "commands": {
+                            "01_create_repo": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/bash\n",
+                                            "docker tag bwcemon_mon_app:latest ",
+                                            {
+                                                "Ref": "AWS::AccountId"
+                                            },
+                                            ".dkr.ecr.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com/",
+                                            {
+                                                "Fn::If": [
+                                                    "InstallMonitoringApp",
+                                                    {
+                                                        "Ref": "MonitoringRepository"
+                                                    },
+                                                    {
+                                                        "Ref": "AWS::NoValue"
+                                                    }
+                                                ]
+                                            },
+                                            ":2.3.3\n",
+                                            "docker push ",
+                                            {
+                                                "Ref": "AWS::AccountId"
+                                            },
+                                            ".dkr.ecr.",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            ".amazonaws.com/",
+                                            {
+                                                "Fn::If": [
+                                                    "InstallMonitoringApp",
+                                                    {
+                                                        "Ref": "MonitoringRepository"
+                                                    },
+                                                    {
+                                                        "Ref": "AWS::NoValue"
+                                                    }
+                                                ]
+                                            },
+                                            ":2.3.3\n"
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "endMessage": {
+                        "commands": {
+                            "02_end_Message": {
+                                "command": "echo 'end cfn-init...'"
+                            }
+                        }
                     }
                 }
             }
@@ -757,17 +873,6 @@
                     ]
                 },
                 "InstanceType": "t2.medium",
-                "KeyName": {
-                    "Fn::If": [
-                        "HasKeyName",
-                        {
-                            "Ref": "KeyName"
-                        },
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
                 "IamInstanceProfile": {
                     "Ref": "ECSInstanceProfile"
                 },
@@ -797,10 +902,22 @@
                                 "sudo systemctl start docker\n",
                                 "sudo usermod -aG docker $USER\n",
                                 "\n",
-                                "pluginListName=", { "Ref" : "PluginList"}, "\n",
+                                "pluginListName=",
+                                {
+                                    "Ref": "PluginList"
+                                },
+                                "\n",
                                 "if [[ -n \"$pluginListName\" ]]; then\n",
-                                "    echo 'BWCE-AWS: Provided List of Plug-ins... ' ", { "Ref" : "PluginList"}, "\n",
-                                "    for pluginName in $(echo ", { "Ref" : "PluginList"}, " | tr ',' '\\n')\n",
+                                "    echo 'BWCE-AWS: Provided List of Plug-ins... ' ",
+                                {
+                                    "Ref": "PluginList"
+                                },
+                                "\n",
+                                "    for pluginName in $(echo ",
+                                {
+                                    "Ref": "PluginList"
+                                },
+                                " | tr ',' '\\n')\n",
                                 "    do\n",
                                 "        if [ $pluginName == 'DC' ]; then\n",
                                 "           echo 'BWCE-AWS: Copying DC Plugin Runtime...'\n",
@@ -838,13 +955,41 @@
                                 "    echo 'BWCE-AWS: List of Plug-ins not provided...'\n",
                                 "fi\n",
                                 "\n",
-                                "$( aws ecr get-login --region ", { "Ref" : "AWS::Region" }, " --no-include-email )\n",
+                                "$( aws ecr get-login --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                " --no-include-email )\n",
                                 "sudo chmod +x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\n",
                                 "cd /home/ec2-user/bwce/bwce-docker/\n",
                                 "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.3.zip\n",
                                 "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.3.zip tibco/bwce:2.3.3\n",
-                                "docker tag tibco/bwce:2.3.3 ",{ "Ref": "AWS::AccountId"}, ".dkr.ecr.", { "Ref" : "AWS::Region" }, ".amazonaws.com/", { "Ref": "EcrRepoName" }, ":2.3.3\n",
-                                "docker push ",{ "Ref": "AWS::AccountId"}, ".dkr.ecr.", { "Ref" : "AWS::Region" }, ".amazonaws.com/", { "Ref": "EcrRepoName" }, ":2.3.3\n",
+                                "docker tag tibco/bwce:2.3.3 ",
+                                {
+                                    "Ref": "AWS::AccountId"
+                                },
+                                ".dkr.ecr.",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                ".amazonaws.com/",
+                                {
+                                    "Ref": "EcrRepoName"
+                                },
+                                ":2.3.3\n",
+                                "docker push ",
+                                {
+                                    "Ref": "AWS::AccountId"
+                                },
+                                ".dkr.ecr.",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                ".amazonaws.com/",
+                                {
+                                    "Ref": "EcrRepoName"
+                                },
+                                ":2.3.3\n",
                                 "   /opt/aws/bin/cfn-init -v --stack ",
                                 {
                                     "Ref": "AWS::StackName"
@@ -857,7 +1002,11 @@
                                         "cfnInitEnd"
                                     ]
                                 },
-                                "    --region ", { "Ref" : "AWS::Region" }, "\n",
+                                "    --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
                                 "echo 'BWCE-AWS: End of EC2 Instance UserData execution, shutting down...'\n",
                                 "sudo poweroff\n"
                             ]
@@ -993,17 +1142,6 @@
                 "InstanceType": {
                     "Ref": "InstanceTypeStudioImage"
                 },
-                "KeyName": {
-                    "Fn::If": [
-                        "HasKeyName",
-                        {
-                            "Ref": "KeyName"
-                        },
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
                 "SecurityGroupIds": [
                     {
                         "Ref": "EC2SecurityGroup"
@@ -1022,7 +1160,42 @@
                 ],
                 "UserData": {
                     "Fn::Base64": {
-                        "Fn::Sub": "#!/bin/bash\nyum update -y\necho 'BWCE-AWS: Install Docker-ce...'\nyum install -y yum-utils device-mapper-persistent-data lvm2\nyum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\nyum -y install docker-ce\nsystemctl start docker\nusermod -aG docker ec2-user\nyum groupinstall -y 'GNOME Desktop' 'Graphical Administration Tools'\nyum install -y tigervnc-server xorg-x11-fonts-Type1\ncp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:5.service\nsed -i -e 's/<USER>/ec2-user/g' /etc/systemd/system/vncserver@:5.service\nmkdir '/home/ec2-user/bwce/bwce-studio'\nchmod 755 '/home/ec2-user/bwce/bwce-studio' \nmkdir '/home/ec2-user/bwce/installers/bwce/BWCE-install'\nunzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.3.3_linux26gl23_x86_64.zip' -d '/home/ec2-user/bwce/installers/bwce/BWCE-install'\nsed -i -e 's#/opt/tibco/bwce#/home/ec2-user/bwce/bwce-studio#g' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.3.3.silent\ncd /home/ec2-user/bwce/installers/bwce/BWCE-install\n./TIBCOUniversalInstaller-lnx-x86-64.bin -silent\nmkdir -p '/home/ec2-user/.vnc'\nchmod 777 '/home/ec2-user/.vnc'\nrunuser -l ec2-user -c 'vncpasswd -f <<<${AWS::StackName} > '/home/ec2-user/.vnc/passwd''\nrunuser -l ec2-user -c 'chmod 600 '/home/ec2-user/.vnc/passwd''\nrunuser -l ec2-user -c 'vncserver'\nsystemctl daemon-reload\nsystemctl start vncserver@:5.service\nsystemctl enable vncserver@:5.service"
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash\n",
+                                "yum update -y\n",
+                                "echo 'BWCE-AWS: Install Docker-ce...'\n",
+                                "yum install -y yum-utils device-mapper-persistent-data lvm2\n",
+                                "yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n",
+                                "yum -y install docker-ce\n",
+                                "systemctl start docker\n",
+                                "usermod -aG docker ec2-user\n",
+                                "yum groupinstall -y 'GNOME Desktop' 'Graphical Administration Tools'\n",
+                                "yum install -y tigervnc-server xorg-x11-fonts-Type1\n",
+                                "cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:5.service\n",
+                                "sed -i -e 's/<USER>/ec2-user/g' /etc/systemd/system/vncserver@:5.service\n",
+                                "mkdir '/home/ec2-user/bwce/bwce-studio'\n",
+                                "chmod 755 '/home/ec2-user/bwce/bwce-studio'\n",
+                                "mkdir '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n",
+                                "unzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.3.3_linux26gl23_x86_64.zip' -d '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n",
+                                "sed -i -e 's#/opt/tibco/bwce#/home/ec2-user/bwce/bwce-studio#g' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.3.3.silent\n",
+                                "cd /home/ec2-user/bwce/installers/bwce/BWCE-install\n",
+                                "./TIBCOUniversalInstaller-lnx-x86-64.bin -silent\n",
+                                "mkdir -p '/home/ec2-user/.vnc'\n",
+                                "chmod 777 '/home/ec2-user/.vnc'\n",
+                                "runuser -l ec2-user -c 'vncpasswd -f <<<",
+                                {
+                                    "Ref": "StudioPassword"
+                                },
+                                " > '/home/ec2-user/.vnc/passwd''\n",
+                                "runuser -l ec2-user -c 'chmod 600 '/home/ec2-user/.vnc/passwd''\n",
+                                "runuser -l ec2-user -c 'vncserver'\n",
+                                "systemctl daemon-reload\n",
+                                "systemctl start vncserver@:5.service\n",
+                                "systemctl enable vncserver@:5.service\n"
+                            ]
+                        ]
                     }
                 }
             }
@@ -1050,7 +1223,7 @@
                     "Ref": "ECSLaunchConfiguration"
                 },
                 "MinSize": "1",
-                "MaxSize": "1000",
+                "MaxSize": "100",
                 "DesiredCapacity": {
                     "Ref": "ClusterSize"
                 },
@@ -1093,17 +1266,6 @@
                 "InstanceType": {
                     "Ref": "InstanceType"
                 },
-                "KeyName": {
-                    "Fn::If": [
-                        "HasKeyName",
-                        {
-                            "Ref": "KeyName"
-                        },
-                        {
-                            "Ref": "AWS::NoValue"
-                        }
-                    ]
-                },
                 "BlockDeviceMappings": [
                     {
                         "DeviceName": "/dev/sda1",
@@ -1132,7 +1294,34 @@
                 },
                 "UserData": {
                     "Fn::Base64": {
-                        "Fn::Sub": "#!/bin/bash\necho ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config\necho ECS_CHECKPOINT=false >> /etc/ecs/ecs.config\necho ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=8m >> /etc/ecs/ecs.config\necho ECS_DISABLE_IMAGE_CLEANUP=false >> /etc/ecs/ecs.config\necho ECS_IMAGE_CLEANUP_INTERVAL=15m >> /etc/ecs/ecs.config\necho ECS_IMAGE_MINIMUM_CLEANUP_AGE=1h >> /etc/ecs/ecs.config\necho ECS_NUM_IMAGES_DELETE_PER_CYCLE=5 >> /etc/ecs/ecs.config\nsudo systemctl enable docker-container@ecs-agent.service\nsudo systemctl start docker-container@ecs-agent.service\n/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration\n/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup\nexport PATH=/home/ec2-user/.local/bin:$PATH\nexport PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n$( aws ecr get-login --region ${AWS::Region} --no-include-email )\n"
+                        "Fn::Join": [
+                            "\n",
+                            [
+                                "#!/bin/bash",
+                                {
+                                    "Fn::Sub": "echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config"
+                                },
+                                "echo ECS_CHECKPOINT=false >> /etc/ecs/ecs.config",
+                                "echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=8m >> /etc/ecs/ecs.config",
+                                "echo ECS_DISABLE_IMAGE_CLEANUP=false >> /etc/ecs/ecs.config",
+                                "echo ECS_IMAGE_CLEANUP_INTERVAL=15m >> /etc/ecs/ecs.config",
+                                "echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=1h >> /etc/ecs/ecs.config",
+                                "echo ECS_NUM_IMAGES_DELETE_PER_CYCLE=5 >> /etc/ecs/ecs.config",
+                                "sudo systemctl enable docker-container@ecs-agent.service",
+                                "sudo systemctl start docker-container@ecs-agent.service",
+                                {
+                                    "Fn::Sub": "/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration"
+                                },
+                                {
+                                    "Fn::Sub": "/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup"
+                                },
+                                "export PATH=/home/ec2-user/.local/bin:$PATH",
+                                "export PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages",
+                                {
+                                    "Fn::Sub": "$( aws ecr get-login --region ${AWS::Region} --no-include-email )"
+                                }
+                            ]
+                        ]
                     }
                 }
             },
@@ -1308,42 +1497,42 @@
                         }
                     },
                     {
-                      "Fn::If": [
-                          "CreateS3Bucket",
-                          {
-                              "PolicyName": "s3-policy",
-                              "PolicyDocument": {
-                                  "Version": "2012-10-17",
-                                  "Statement": [
-                                      {
-                                          "Effect": "Allow",
-                                          "Action": [
-                                              "s3:ListBucket",
-                                              "s3:PutObject",
-                                              "s3:GetObject",
-                                              "s3:DeleteObject",
-                                              "s3:ListObject"
-                                          ],
-                                          "Resource": {
-                                              "Fn::Join": [
-                                                  "",
-                                                  [
-                                                      "arn:aws:s3:::",
-                                                      {
-                                                          "Ref": "BWCEArtifactsBucket"
-                                                      },
-                                                      "/*"
-                                                  ]
-                                              ]
-                                          }
-                                      }
-                                  ]
-                              }
-                          },
-                          {
-                              "Ref": "AWS::NoValue"
-                          }
-                      ]
+                        "Fn::If": [
+                            "CreateS3Bucket",
+                            {
+                                "PolicyName": "s3-policy",
+                                "PolicyDocument": {
+                                    "Version": "2012-10-17",
+                                    "Statement": [
+                                        {
+                                            "Effect": "Allow",
+                                            "Action": [
+                                                "s3:ListBucket",
+                                                "s3:PutObject",
+                                                "s3:GetObject",
+                                                "s3:DeleteObject",
+                                                "s3:ListObject"
+                                            ],
+                                            "Resource": {
+                                                "Fn::Join": [
+                                                    "",
+                                                    [
+                                                        "arn:aws:s3:::",
+                                                        {
+                                                            "Ref": "BWCEArtifactsBucket"
+                                                        },
+                                                        "/*"
+                                                    ]
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "Ref": "AWS::NoValue"
+                            }
+                        ]
                     }
                 ]
             }
@@ -1383,9 +1572,12 @@
             }
         },
         "EC2Instance": {
-            "Description": "A reference to the EC2 Instance",
+            "Description": "IP address of the BWCE Studio Instance",
             "Value": {
-                "Fn::Sub": "https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#Instances:sort=instanceState"
+                "Fn::GetAtt": [
+                    "StudioEC2Instance",
+                    "PublicIp"
+                ]
             }
         },
         "AutoScalingGroup": {
@@ -1406,6 +1598,12 @@
                 "Fn::Sub": "https://console.aws.amazon.com/ecs/home?region=${AWS::Region}#/repositories/${EcrRepoName}#images"
             }
         },
+        "StudioPasswordValue": {
+            "Description": "The password set for your BusinessWorks Studio EC2 Instance",
+            "Value": {
+                "Ref": "StudioPassword"
+            }
+        },
         "S3Bucket": {
             "Description": "A reference to the S3 Bucket which will be used for customizing base image. If you selected 'Create S3 Bucket for Base Image Customization?' as 'No', then it will not be applicable.",
             "Value": {
@@ -1415,7 +1613,15 @@
                         "Fn::Join": [
                             "",
                             [
-                                "https://console.aws.amazon.com/s3/home?region=", { "Ref" : "AWS::Region" }, "&bucket=", { "Ref" : "BWCEArtifactsBucket" },""
+                                "https://console.aws.amazon.com/s3/home?region=",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "&bucket=",
+                                {
+                                    "Ref": "BWCEArtifactsBucket"
+                                },
+                                ""
                             ]
                         ]
                     },
