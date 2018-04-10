@@ -1158,6 +1158,9 @@
                         }
                     }
                 ],
+                "IamInstanceProfile": {
+                    "Ref": "EC2InstanceProfile"
+                },
                 "UserData": {
                     "Fn::Base64": {
                         "Fn::Join": [
@@ -1373,6 +1376,56 @@
                         }
                     }
                 }
+            }
+        },
+        "StudioRole":{
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "Path": "/",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazon.aws.com"
+                                ]
+                            },
+                            "action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": "ecs-ec2-policy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ecs:*"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "EC2InstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "StudioRole"
+                    }
+                ]
             }
         },
         "ECSRole": {
