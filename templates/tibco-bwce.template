@@ -1389,10 +1389,10 @@
                             "Effect": "Allow",
                             "Principal": {
                                 "Service": [
-                                    "ec2.amazon.aws.com"
+                                    "ec2.amazonaws.com"
                                 ]
                             },
-                            "action": [
+                            "Action": [
                                 "sts:AssumeRole"
                             ]
                         }
