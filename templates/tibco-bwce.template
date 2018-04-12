@@ -1185,7 +1185,6 @@
                             [
                                 "#!/bin/bash\n",
                                 "yum update -y\n",
-                                "#!/bin/bash\n",
                                 "/opt/aws/bin/cfn-init -v --stack ",
                                 {
                                     "Ref": "AWS::StackName"
