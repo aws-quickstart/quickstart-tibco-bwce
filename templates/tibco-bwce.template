@@ -1414,7 +1414,7 @@
                                         "ecs:StartTelemetrySession",
                                         "ecs:UpdateContainerInstancesState",
                                         "ecs:Submit*",
-                                        "esc:CreateService"
+                                        "ecs:CreateService"
                                     ],
                                     "Resource": "*"
                                 }

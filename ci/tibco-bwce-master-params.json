@@ -70,5 +70,9 @@
     {
         "ParameterKey": "MonInstanceType",
         "ParameterValue": "t2.medium"
+    },
+    {
+        "ParameterKey": "StudioPassword",
+        "ParameterValue": "$[taskcat_genpass_8A]"
     }
 ]
