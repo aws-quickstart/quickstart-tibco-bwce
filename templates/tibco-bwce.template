@@ -258,6 +258,7 @@
             "Type": "String",
             "MinLength": 1,
             "MaxLength": 8,
+            "NoEcho": "true",
             "ConstraintDescription": "This password needs to be set in order to access your BWCE studio instance. The max length of this password is 8 characters."
         },
         "KeyName": {
@@ -373,14 +374,14 @@
         "QSS3BucketName": {
             "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
             "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
-            "Default": "quickstart-reference",
+            "Default": "aws-quickstart",
             "Description": "S3 bucket name for the Quick Start assets. This string can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
             "Type": "String"
         },
         "QSS3KeyPrefix": {
             "AllowedPattern": "^[0-9a-zA-Z-/]*$",
             "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
-            "Default": "tibco/bwce/latest/",
+            "Default": "quickstart-tibco-bwce/",
             "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
             "Type": "String"
         },
@@ -1129,6 +1130,22 @@
         },
         "StudioEC2Instance": {
             "Type": "AWS::EC2::Instance",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "config": {
+                        "files": {
+                            "/tmp/studio_pass.txt": {
+                                "content": {
+                                    "Ref": "StudioPassword"
+                                },
+                                "mode": "000644",
+                                "owner": "ec2-user",
+                                "group": "ec2-user"
+                            }
+                        }
+                    }
+                }
+            },
             "Properties": {
                 "ImageId": {
                     "Fn::FindInMap": [
@@ -1168,6 +1185,17 @@
                             [
                                 "#!/bin/bash\n",
                                 "yum update -y\n",
+                                "#!/bin/bash\n",
+                                "/opt/aws/bin/cfn-init -v --stack ",
+                                {
+                                    "Ref": "AWS::StackName"
+                                },
+                                " --resource StudioEC2Instance ",
+                                " --region ",
+                                {
+                                    "Ref": "AWS::Region"
+                                },
+                                "\n",
                                 "echo 'BWCE-AWS: Install Docker-ce...'\n",
                                 "yum install -y yum-utils device-mapper-persistent-data lvm2\n",
                                 "yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n",
@@ -1187,16 +1215,14 @@
                                 "./TIBCOUniversalInstaller-lnx-x86-64.bin -silent\n",
                                 "mkdir -p '/home/ec2-user/.vnc'\n",
                                 "chmod 777 '/home/ec2-user/.vnc'\n",
-                                "runuser -l ec2-user -c 'vncpasswd -f <<<",
-                                {
-                                    "Ref": "StudioPassword"
-                                },
+                                "runuser -l ec2-user -c 'vncpasswd -f <<< $(cat /tmp/studio_pass.txt)",
                                 " > '/home/ec2-user/.vnc/passwd''\n",
                                 "runuser -l ec2-user -c 'chmod 600 '/home/ec2-user/.vnc/passwd''\n",
                                 "runuser -l ec2-user -c 'vncserver'\n",
                                 "systemctl daemon-reload\n",
                                 "systemctl start vncserver@:5.service\n",
-                                "systemctl enable vncserver@:5.service\n"
+                                "systemctl enable vncserver@:5.service\n",
+                                "rm /tmp/studio_pass.txt\n"
                             ]
                         ]
                     }
@@ -1297,34 +1323,7 @@
                 },
                 "UserData": {
                     "Fn::Base64": {
-                        "Fn::Join": [
-                            "\n",
-                            [
-                                "#!/bin/bash",
-                                {
-                                    "Fn::Sub": "echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config"
-                                },
-                                "echo ECS_CHECKPOINT=false >> /etc/ecs/ecs.config",
-                                "echo ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=8m >> /etc/ecs/ecs.config",
-                                "echo ECS_DISABLE_IMAGE_CLEANUP=false >> /etc/ecs/ecs.config",
-                                "echo ECS_IMAGE_CLEANUP_INTERVAL=15m >> /etc/ecs/ecs.config",
-                                "echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=1h >> /etc/ecs/ecs.config",
-                                "echo ECS_NUM_IMAGES_DELETE_PER_CYCLE=5 >> /etc/ecs/ecs.config",
-                                "sudo systemctl enable docker-container@ecs-agent.service",
-                                "sudo systemctl start docker-container@ecs-agent.service",
-                                {
-                                    "Fn::Sub": "/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration"
-                                },
-                                {
-                                    "Fn::Sub": "/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup"
-                                },
-                                "export PATH=/home/ec2-user/.local/bin:$PATH",
-                                "export PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages",
-                                {
-                                    "Fn::Sub": "$( aws ecr get-login --region ${AWS::Region} --no-include-email )"
-                                }
-                            ]
-                        ]
+                        "Fn::Sub": "#!/bin/bash\necho 'BWCE-AWS: Install Docker-ce...'\nsudo yum install -y yum-utils device-mapper-persistent-data lvm2\nsudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\nsudo yum install -y docker-ce\nsudo systemctl start docker\nsudo usermod -aG docker $USER\ncd /tmp\ncd -\necho ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config\necho ECS_CHECKPOINT=false >> /etc/ecs/ecs.config\necho ECS_ENGINE_TASK_CLEANUP_WAIT_DURATION=8m >> /etc/ecs/ecs.config\necho ECS_DISABLE_IMAGE_CLEANUP=false >> /etc/ecs/ecs.config\necho ECS_IMAGE_CLEANUP_INTERVAL=15m >> /etc/ecs/ecs.config\necho ECS_IMAGE_MINIMUM_CLEANUP_AGE=1h >> /etc/ecs/ecs.config\necho ECS_NUM_IMAGES_DELETE_PER_CYCLE=5 >> /etc/ecs/ecs.config\nsudo systemctl enable docker-container@ecs-agent.service\nsudo systemctl start docker-container@ecs-agent.service\n/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration\n/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup\nexport PATH=/home/ec2-user/.local/bin:$PATH\nexport PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n$( aws ecr get-login --region ${AWS::Region} --no-include-email )\n"
                     }
                 }
             },
@@ -1389,7 +1388,8 @@
                             "Effect": "Allow",
                             "Principal": {
                                 "Service": [
-                                    "ec2.amazonaws.com"
+                                    "ec2.amazonaws.com",
+                                    "ecs.amazonaws.com"
                                 ]
                             },
                             "Action": [
@@ -1400,14 +1400,62 @@
                 },
                 "Policies": [
                     {
-                        "PolicyName": "ecs-ec2-policy",
+                        "PolicyName": "ecs-policy",
                         "PolicyDocument": {
                             "Version": "2012-10-17",
                             "Statement": [
                                 {
                                     "Effect": "Allow",
                                     "Action": [
-                                        "ecs:*"
+                                        "ecs:DeregisterContainerInstance",
+                                        "ecs:DiscoverPollEndpoint",
+                                        "ecs:Poll",
+                                        "ecs:RegisterContainerInstance",
+                                        "ecs:StartTelemetrySession",
+                                        "ecs:UpdateContainerInstancesState",
+                                        "ecs:Submit*",
+                                        "esc:CreateService"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName": "ecr-policy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "ecr:GetAuthorizationToken",
+                                        "ecr:BatchCheckLayerAvailability",
+                                        "ecr:GetDownloadUrlForLayer",
+                                        "ecr:GetRepositoryPolicy",
+                                        "ecr:DescribeRepositories",
+                                        "ecr:ListImages",
+                                        "ecr:BatchGetImage",
+                                        "ecr:InitiateLayerUpload",
+                                        "ecr:UploadLayerPart",
+                                        "ecr:CompleteLayerUpload",
+                                        "ecr:PutImage"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName": "extra-policy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "iam:PassRole",
+                                        "elasticloadbalancing:Describe*"
                                     ],
                                     "Resource": "*"
                                 }
@@ -1482,7 +1530,7 @@
                                         "ecr:BatchCheckLayerAvailability",
                                         "ecr:GetDownloadUrlForLayer",
                                         "ecr:GetRepositoryPolicy",
-                                        "ecr:DescribeRepository",
+                                        "ecr:DescribeRepositories",
                                         "ecr:ListImages",
                                         "ecr:BatchGetImage",
                                         "ecr:InitiateLayerUpload",
@@ -1619,12 +1667,12 @@
             }
         },
         "DefaultTargetGroup": {
-            "Description": "A reference to the default Target Group for Application Load Balancer.",
+            "Description": "A reference to the ARN of the default Target Group for the Application Load Balancer.",
             "Value": {
-                "Fn::Sub": "https://console.aws.amazon.com/ec2/v2/home?region=${AWS::Region}#TargetGroups:search=${AWS::StackName}-default"
+                "Ref": "DefaultTargetGroup"
             }
         },
-        "EC2Instance": {
+        "StudioEC2Instance": {
             "Description": "IP address of the BWCE Studio Instance",
             "Value": {
                 "Fn::GetAtt": [
@@ -1639,6 +1687,12 @@
                 "Fn::Sub": "https://console.aws.amazon.com/ec2/autoscaling/home?region=${AWS::Region}#AutoScalingGroups:id=${ECSAutoScalingGroup}"
             }
         },
+        "ECSClusterName": {
+            "Description": "Name of the ECS Cluster created",
+            "Value": {
+                "Ref": "ECSCluster"
+            }
+        },
         "ECSCluster": {
             "Description": "A reference to the ECS cluster.",
             "Value": {
@@ -1649,12 +1703,6 @@
             "Description": "A reference to the Amazon ECR (Amazon EC2 Container Registry).",
             "Value": {
                 "Fn::Sub": "https://console.aws.amazon.com/ecs/home?region=${AWS::Region}#/repositories/${EcrRepoName}#images"
-            }
-        },
-        "StudioPasswordValue": {
-            "Description": "The password set for your BusinessWorks Studio EC2 Instance",
-            "Value": {
-                "Ref": "StudioPassword"
             }
         },
         "S3Bucket": {
