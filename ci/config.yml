@@ -1,27 +1,20 @@
 global:
-  marketplace-ami: false
-  owner: quickstart-eng@amazon.com
-  qsname: quickstart-tibco-bwce-quickstart
+  owner: crmadrig@tibco.com
+  qsname: quickstart-tibco-bwce
   regions:
     - ap-northeast-1
-    - ap-northeast-2
-    - ap-south-1
     - ap-southeast-1
     - ap-southeast-2
     - ca-central-1
     - eu-central-1
     - eu-west-1
-    - sa-east-1
     - us-east-1
     - us-east-2
     - us-west-1
     - us-west-2
   reporting: true
- 
+
 tests:
-  quickstart-tibco-bwce-quickstartt1:
-    parameter_input: quickstart-tibco-bwce-quickstart-example-params1.json
-    template_file: quickstart-tibco-bwce-quickstart-example1.template
-  quickstart-tibco-bwce-quickstartt2:
-    parameter_input: quickstart-tibco-bwce-quickstart-example-params2.json
-    template_file: quickstart-tibco-bwce-quickstart-example2.template
+  quickstart-tibco-bwce:
+    parameter_input: tibco-bwce-master-params.json
+    template_file: tibco-bwce-master.template
