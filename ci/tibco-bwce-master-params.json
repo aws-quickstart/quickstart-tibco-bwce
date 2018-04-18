@@ -24,10 +24,6 @@
         "ParameterValue": "40"
     },
     {
-        "ParameterKey": "EcrRepoName",
-        "ParameterValue": "$[taskcat_random-string]"
-    },
-    {
         "ParameterKey": "ExtBucket",
         "ParameterValue": "No"
     },
@@ -73,6 +69,6 @@
     },
     {
         "ParameterKey": "StudioPassword",
-        "ParameterValue": "$[taskcat_genpass_8A]"
+        "ParameterValue": "$[alfred_genpass_8]"
     }
 ]
