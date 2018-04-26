@@ -43,15 +43,6 @@
                 },
                 {
                     "Label": {
-                        "default": "Monitoring Configuration"
-                    },
-                    "Parameters": [
-                        "InstMonitoring",
-                        "MonInstanceType"
-                    ]
-                },
-                {
-                    "Label": {
                         "default": "AWS Quickstart Configuration"
                     },
                     "Parameters": [
@@ -73,9 +64,6 @@
                 "ExtBucket": {
                     "default": "Create S3 Bucket for Base Image Customization?"
                 },
-                "InstMonitoring": {
-                    "default": "Install Monitoring Application?"
-                },
                 "InstanceType": {
                     "default": "ECS Cluster Instance Type:"
                 },
@@ -84,9 +72,6 @@
                 },
                 "KeyName": {
                     "default": "Key Pair:"
-                },
-                "MonInstanceType": {
-                    "default": "Monitoring Instance Type:"
                 },
                 "PluginList": {
                     "default": "List of Plug-ins:"
@@ -156,16 +141,6 @@
             "ConstraintDescription": "The value should be Yes/No.",
             "Default": "No",
             "Description": "Do you want to create a new S3 bucket & required folder structure for extending base image? You can upload third-party drivers, OSGI bundles, certificates, plugins etc. in this bucket to extend the base image later.",
-            "Type": "String"
-        },
-        "InstMonitoring": {
-            "AllowedValues": [
-                "Yes",
-                "No"
-            ],
-            "ConstraintDescription": "The value should be Yes/No.",
-            "Default": "No",
-            "Description": "Do you want to install the Monitoring Application?",
             "Type": "String"
         },
         "InstanceType": {
@@ -256,7 +231,7 @@
                 "m3.2xlarge"
             ],
             "ConstraintDescription": "InstanceTypeStudioImage must be a valid EC2 instance type.",
-            "Default": "m3.large",
+            "Default": "m4.large",
             "Description": "Select an instance type that runs your BusinessWorks Container Edition studio.",
             "Type": "String"
         },
@@ -267,77 +242,6 @@
             "MaxLength": 64,
             "MinLength": 1,
             "Type": "AWS::EC2::KeyPair::KeyName"
-        },
-        "MonInstanceType": {
-            "AllowedValues": [
-                "t2.micro",
-                "t2.small",
-                "t2.medium",
-                "t2.large",
-                "t2.xlarge",
-                "t2.2xlarge",
-                "m4.large",
-                "m4.xlarge",
-                "m4.2xlarge",
-                "m4.4xlarge",
-                "m4.10xlarge",
-                "m4.16xlarge",
-                "m3.medium",
-                "m3.large",
-                "m3.xlarge",
-                "m3.2xlarge",
-                "c4.large",
-                "c4.xlarge",
-                "c4.2xlarge",
-                "c4.4xlarge",
-                "c4.8xlarge",
-                "c3.large",
-                "c3.xlarge",
-                "c3.2xlarge",
-                "c3.4xlarge",
-                "c3.8xlarge",
-                "f1.2xlarge",
-                "f1.16xlarge",
-                "g3.4xlarge",
-                "g3.8xlarge",
-                "g3.16xlarge",
-                "g2.2xlarge",
-                "g2.8xlarge",
-                "p2.xlarge",
-                "p2.8xlarge",
-                "p2.16xlarge",
-                "r4.large",
-                "r4.xlarge",
-                "r4.2xlarge",
-                "r4.4xlarge",
-                "r4.8xlarge",
-                "r4.16xlarge",
-                "r3.large",
-                "r3.xlarge",
-                "r3.2xlarge",
-                "r3.4xlarge",
-                "r3.8xlarge",
-                "x1.16xlarge",
-                "x1.32xlarge",
-                "d2.xlarge",
-                "d2.2xlarge",
-                "d2.4xlarge",
-                "d2.8xlarge",
-                "i2.xlarge",
-                "i2.2xlarge",
-                "i2.4xlarge",
-                "i2.8xlarge",
-                "i3.large",
-                "i3.xlarge",
-                "i3.2xlarge",
-                "i3.4xlarge",
-                "i3.8xlarge",
-                "i3.16xlarge"
-            ],
-            "ConstraintDescription": "InstanceType must be a valid EC2 instance type.",
-            "Default": "t2.medium",
-            "Description": "Select an instance type for Monitoring EC2 instance.",
-            "Type": "String"
         },
         "PluginList": {
             "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), Kafka (Plug-in for Apache Kafka), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com).",
@@ -442,14 +346,6 @@
                     ]
                 }
             ]
-        },
-        "InstallMonitoringApp": {
-            "Fn::Equals": [
-                {
-                    "Ref": "InstMonitoring"
-                },
-                "Yes"
-            ]
         }
     },
     "Rules": {
@@ -537,33 +433,6 @@
                 ]
             }
         },
-        "MonSecurityGroup": {
-            "Type": "AWS::EC2::SecurityGroup",
-            "Properties": {
-                "VpcId": {
-                    "Ref": "VPCID"
-                },
-                "GroupDescription": "Access to the BWCE Monitoring Application instance",
-                "SecurityGroupIngress": [
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": "8080",
-                        "ToPort": "8080",
-                        "CidrIp": {
-                            "Ref": "AdminIngressLocation"
-                        }
-                    }
-                ],
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": {
-                            "Fn::Sub": "${AWS::StackName}-Mon-Host"
-                        }
-                    }
-                ]
-            }
-        },
         "EC2SecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
@@ -626,10 +495,6 @@
         "BwceEcrRepository": {
             "Type": "AWS::ECR::Repository"
         },
-        "BwceMonitoringRepository": {
-            "Type": "AWS::ECR::Repository",
-            "Condition": "InstallMonitoringApp"
-        },
         "DefaultTargetGroup": {
             "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
             "Properties": {
@@ -684,170 +549,6 @@
                         }
                     }
                 ]
-            }
-        },
-        "MonitoringInstance": {
-            "Type": "AWS::EC2::Instance",
-            "Condition": "InstallMonitoringApp",
-            "Properties": {
-                "ImageId": {
-                    "Fn::FindInMap": [
-                        "AWSAMIRegionMap",
-                        {
-                            "Ref": "AWS::Region"
-                        },
-                        "AMI"
-                    ]
-                },
-                "InstanceType": {
-                    "Ref": "MonInstanceType"
-                },
-                "IamInstanceProfile": {
-                    "Ref": "ECSInstanceProfile"
-                },
-                "SecurityGroupIds": [
-                    {
-                        "Fn::GetAtt": [
-                            "MonSecurityGroup",
-                            "GroupId"
-                        ]
-                    }
-                ],
-                "SubnetId": {
-                    "Ref": "PublicSubnet2ID"
-                },
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": {
-                            "Fn::Sub": "${AWS::StackName} Monitoring Host"
-                        }
-                    }
-                ],
-                "UserData": {
-                    "Fn::Base64": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                "#!/bin/bash\n",
-                                "echo 'BWCE-AWS: Start of Monitoring Instance UserData execution...'\n",
-                                "export PATH=/home/ec2-user/.local/bin:$PATH\n",
-                                "export PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n",
-                                "\n",
-                                "echo 'BWCE-AWS: Install Docker-ce...'\n",
-                                "sudo yum install -y yum-utils device-mapper-persistent-data lvm2\n",
-                                "sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n",
-                                "sudo yum -y install docker-ce\n",
-                                "sudo systemctl start docker\n",
-                                "sudo usermod -aG docker $USER\n",
-                                "\n",
-                                "echo 'BWCE-AWS: Install Docker-Compose...'\n",
-                                "sudo pip install docker-compose\n",
-                                "sudo yum upgrade -y python*\n",
-                                "\n",
-                                "echo 'BWCE-AWS: Install Monitoring Application...'\n",
-                                {
-                                    "Fn::Sub": "$( aws ecr get-login --region ${AWS::Region} --no-include-email )"
-                                },
-                                "\n",
-                                "cd /home/ec2-user/bwce/bwce-mon/\n",
-                                "docker-compose up -d mysql_db\n",
-                                "docker-compose up -d mon_app\n",
-                                "\n",
-                                "/opt/aws/bin/cfn-init -v --stack ",
-                                {
-                                    "Ref": "AWS::StackName"
-                                },
-                                " --resource MonitoringInstance --configsets ",
-                                {
-                                    "Fn::If": [
-                                        "InstallMonitoringApp",
-                                        "quickstartwithMonRepo",
-                                        "endMessage"
-                                    ]
-                                },
-                                "\n",
-                                "echo 'BWCE-AWS: End of Monitoring Instance UserData execution...'\n"
-                            ]
-                        ]
-                    }
-                }
-            },
-            "Metadata": {
-                "AWS::CloudFormation::Init": {
-                    "configSets": {
-                        "quickstartwithMonRepo": [
-                            "MonRepoCreation",
-                            "endMessage"
-                        ],
-                        "cfnInitEnd": [
-                            "endMessage"
-                        ]
-                    },
-                    "MonRepoCreation": {
-                        "commands": {
-                            "01_create_repo": {
-                                "command": {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "#!/bin/bash\n",
-                                            "docker tag bwcemon_mon_app:latest ",
-                                            {
-                                                "Ref": "AWS::AccountId"
-                                            },
-                                            ".dkr.ecr.",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            ".amazonaws.com/",
-                                            {
-                                                "Fn::If": [
-                                                    "InstallMonitoringApp",
-                                                    {
-                                                        "Ref": "BwceMonitoringRepository"
-                                                    },
-                                                    {
-                                                        "Ref": "AWS::NoValue"
-                                                    }
-                                                ]
-                                            },
-                                            ":2.3.3\n",
-                                            "docker push ",
-                                            {
-                                                "Ref": "AWS::AccountId"
-                                            },
-                                            ".dkr.ecr.",
-                                            {
-                                                "Ref": "AWS::Region"
-                                            },
-                                            ".amazonaws.com/",
-                                            {
-                                                "Fn::If": [
-                                                    "InstallMonitoringApp",
-                                                    {
-                                                        "Ref": "BwceMonitoringRepository"
-                                                    },
-                                                    {
-                                                        "Ref": "AWS::NoValue"
-                                                    }
-                                                ]
-                                            },
-                                            ":2.3.3\n"
-                                        ]
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "endMessage": {
-                        "commands": {
-                            "02_end_Message": {
-                                "command": "echo 'end cfn-init...'"
-                            }
-                        }
-                    }
-                }
             }
         },
         "InitialEC2Setup": {
@@ -1763,12 +1464,6 @@
                 "Ref": "BwceEcrRepository"
             }
         },
-        "BwceMonitoringRepository": {
-            "Description": "Name of the ECR Repository created to store monitoring image",
-            "Value": {
-                "Ref": "BwceEcrRepository"
-            }
-        },
         "ECR": {
             "Description": "A reference to the Amazon ECR (Amazon EC2 Container Registry).",
             "Value": {
@@ -1795,18 +1490,6 @@
                                 ""
                             ]
                         ]
-                    },
-                    "Not Applicable"
-                ]
-            }
-        },
-        "MonitoringURL": {
-            "Description": "Monitoring Application URL",
-            "Value": {
-                "Fn::If": [
-                    "InstallMonitoringApp",
-                    {
-                        "Fn::Sub": "http://${MonitoringInstance.PublicIp}:8080/"
                     },
                     "Not Applicable"
                 ]

@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "TIBCO BWCE 2.3.3. This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then deploys a VPC, with a pair of public and private subnets spread across two Availabilty Zones. It deploys an Internet Gateway, with a default route on the public subnets. It deploys a pair of NAT Gateways (one in each AZ), and default routes for them in the private subnets. It then deploys a highly available ECS cluster of EC2 instances (ECS Hosts) launched from the TIBCO BWCE AMI in an AutoScaling Group,  with the EC2 instances distributed across multiple Availability Zones. This template also provides you an option to create an S3 bucket and folder structure inside the bucket required for base docker image customization. This template also provides you an option to install BWCE Monitoring Application. License: Apache 2.0 (Please do not remove) Apr,2,2018 (qs-1oalbg1k4)",
+    "Description": "TIBCO BWCE 2.3.3. This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then deploys a VPC, with a pair of public and private subnets spread across two Availabilty Zones. It deploys an Internet Gateway, with a default route on the public subnets. It deploys a pair of NAT Gateways (one in each AZ), and default routes for them in the private subnets. It then deploys a highly available ECS cluster of EC2 instances (ECS Hosts) launched from the TIBCO BWCE AMI in an AutoScaling Group,  with the EC2 instances distributed across multiple Availability Zones. This template also provides you an option to create an S3 bucket and folder structure inside the bucket required for base docker image customization. License: Apache 2.0 (Please do not remove) Apr,2,2018 (qs-1oalbg1k4)",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -43,15 +43,6 @@
                 },
                 {
                     "Label": {
-                        "default": "Monitoring Configuration"
-                    },
-                    "Parameters": [
-                        "InstMonitoring",
-                        "MonInstanceType"
-                    ]
-                },
-                {
-                    "Label": {
                         "default": "AWS Quickstart Configuration"
                     },
                     "Parameters": [
@@ -76,9 +67,6 @@
                 "ExtBucket": {
                     "default": "Create S3 Bucket for Base Image Customization?"
                 },
-                "InstMonitoring": {
-                    "default": "Install Monitoring Application?"
-                },
                 "InstanceType": {
                     "default": "ECS Cluster Instance Type:"
                 },
@@ -87,9 +75,6 @@
                 },
                 "KeyName": {
                     "default": "Key Pair:"
-                },
-                "MonInstanceType": {
-                    "default": "Monitoring Instance Type:"
                 },
                 "PluginList": {
                     "default": "List of Plug-ins:"
@@ -160,16 +145,6 @@
             "ConstraintDescription": "The value should be Yes/No.",
             "Default": "No",
             "Description": "Do you want to create a new S3 bucket & required folder structure for extending base image? You can upload third-party drivers, OSGI bundles, certificates, plugins etc. in this bucket to extend the base image later.",
-            "Type": "String"
-        },
-        "InstMonitoring": {
-            "AllowedValues": [
-                "Yes",
-                "No"
-            ],
-            "ConstraintDescription": "The value should be Yes/No.",
-            "Default": "No",
-            "Description": "Do you want to install monitoring application?",
             "Type": "String"
         },
         "InstanceType": {
@@ -260,7 +235,7 @@
                 "m3.2xlarge"
             ],
             "ConstraintDescription": "InstanceTypeStudioImage must be a valid EC2 instance type.",
-            "Default": "m3.large",
+            "Default": "m4.large",
             "Description": "Select an instance type that runs your BusinessWorks Container Edition studio.",
             "Type": "String"
         },
@@ -271,77 +246,6 @@
             "MaxLength": 64,
             "MinLength": 1,
             "Type": "AWS::EC2::KeyPair::KeyName"
-        },
-        "MonInstanceType": {
-            "AllowedValues": [
-                "t2.micro",
-                "t2.small",
-                "t2.medium",
-                "t2.large",
-                "t2.xlarge",
-                "t2.2xlarge",
-                "m4.large",
-                "m4.xlarge",
-                "m4.2xlarge",
-                "m4.4xlarge",
-                "m4.10xlarge",
-                "m4.16xlarge",
-                "m3.medium",
-                "m3.large",
-                "m3.xlarge",
-                "m3.2xlarge",
-                "c4.large",
-                "c4.xlarge",
-                "c4.2xlarge",
-                "c4.4xlarge",
-                "c4.8xlarge",
-                "c3.large",
-                "c3.xlarge",
-                "c3.2xlarge",
-                "c3.4xlarge",
-                "c3.8xlarge",
-                "f1.2xlarge",
-                "f1.16xlarge",
-                "g3.4xlarge",
-                "g3.8xlarge",
-                "g3.16xlarge",
-                "g2.2xlarge",
-                "g2.8xlarge",
-                "p2.xlarge",
-                "p2.8xlarge",
-                "p2.16xlarge",
-                "r4.large",
-                "r4.xlarge",
-                "r4.2xlarge",
-                "r4.4xlarge",
-                "r4.8xlarge",
-                "r4.16xlarge",
-                "r3.large",
-                "r3.xlarge",
-                "r3.2xlarge",
-                "r3.4xlarge",
-                "r3.8xlarge",
-                "x1.16xlarge",
-                "x1.32xlarge",
-                "d2.xlarge",
-                "d2.2xlarge",
-                "d2.4xlarge",
-                "d2.8xlarge",
-                "i2.xlarge",
-                "i2.2xlarge",
-                "i2.4xlarge",
-                "i2.8xlarge",
-                "i3.large",
-                "i3.xlarge",
-                "i3.2xlarge",
-                "i3.4xlarge",
-                "i3.8xlarge",
-                "i3.16xlarge"
-            ],
-            "ConstraintDescription": "InstanceType must be a valid EC2 instance type.",
-            "Default": "t2.medium",
-            "Description": "Select an instance type for Monitoring EC2 instance.",
-            "Type": "String"
         },
         "PluginList": {
             "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC,MongoDB,S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), Kafka (Plug-in for Apache Kafka), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com).",
@@ -365,7 +269,7 @@
             "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/(1[6-9]|2[0-8]))$",
             "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/16-28",
             "Default": "10.0.128.0/20",
-            "Description": "CIDR Block for the public subnet running your Monitoring Application",
+            "Description": "CIDR Block for the public subnet 1.",
             "Type": "String"
         },
         "PublicSubnet2CIDR": {
@@ -465,14 +369,6 @@
                         ""
                     ]
                 }
-            ]
-        },
-        "InstallMonitoringApp": {
-            "Fn::Equals": [
-                {
-                    "Ref": "InstMonitoring"
-                },
-                "Yes"
             ]
         }
     },
@@ -649,12 +545,6 @@
                     },
                     "ExtBucket": {
                         "Ref": "ExtBucket"
-                    },
-                    "InstMonitoring": {
-                        "Ref": "InstMonitoring"
-                    },
-                    "MonInstanceType": {
-                        "Ref": "MonInstanceType"
                     }
                 }
             }
