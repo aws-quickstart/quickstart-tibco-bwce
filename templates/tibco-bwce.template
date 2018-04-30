@@ -849,6 +849,9 @@
                 "InstanceType": {
                     "Ref": "InstanceTypeStudioImage"
                 },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
                 "SecurityGroupIds": [
                     {
                         "Ref": "EC2SecurityGroup"
@@ -895,6 +898,7 @@
                                 "yum install -y tigervnc-server xorg-x11-fonts-Type1\n",
                                 "cp /lib/systemd/system/vncserver@.service /etc/systemd/system/vncserver@:5.service\n",
                                 "sed -i -e 's/<USER>/ec2-user/g' /etc/systemd/system/vncserver@:5.service\n",
+                                "sed -i -e 's#ExecStart=/usr/bin/vncserver %i#ExecStart=/usr/bin/vncserver %i -localhost#g' /etc/systemd/system/vncserver@:5.service\n",
                                 "mkdir '/home/ec2-user/bwce/bwce-studio'\n",
                                 "chmod 755 '/home/ec2-user/bwce/bwce-studio'\n",
                                 "mkdir '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n",
@@ -911,6 +915,7 @@
                                 "systemctl daemon-reload\n",
                                 "systemctl start vncserver@:5.service\n",
                                 "systemctl enable vncserver@:5.service\n",
+                                "vncserver -kill :1\n",
                                 "rm /tmp/studio_pass.txt\n"
                             ]
                         ]
@@ -983,6 +988,9 @@
                 },
                 "InstanceType": {
                     "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
                 },
                 "BlockDeviceMappings": [
                     {
