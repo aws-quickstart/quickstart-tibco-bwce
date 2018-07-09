@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "TIBCO BWCE 2.3.3. This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then deploys a VPC, with a pair of public and private subnets spread across two Availabilty Zones. It deploys an Internet Gateway, with a default route on the public subnets. It deploys a pair of NAT Gateways (one in each AZ), and default routes for them in the private subnets. It then deploys a highly available ECS cluster of EC2 instances (ECS Hosts) launched from the TIBCO BWCE AMI in an AutoScaling Group,  with the EC2 instances distributed across multiple Availability Zones. This template also provides you an option to create an S3 bucket and folder structure inside the bucket required for base docker image customization. License: Apache 2.0 (Please do not remove) Apr,2,2018 (qs-1oalbg1k4)",
+    "Description": "TIBCO BWCE 2.3.4. This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then deploys a VPC, with a pair of public and private subnets spread across two Availabilty Zones. It deploys an Internet Gateway, with a default route on the public subnets. It deploys a pair of NAT Gateways (one in each AZ), and default routes for them in the private subnets. It then deploys a highly available ECS cluster of EC2 instances (ECS Hosts) launched from the TIBCO BWCE AMI in an AutoScaling Group,  with the EC2 instances distributed across multiple Availability Zones. This template also provides you an option to create an S3 bucket and folder structure inside the bucket required for base docker image customization. License: Apache 2.0 (Please do not remove) Apr,2,2018 (qs-1oalbg1k4)",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -375,37 +375,37 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "us-east-1": {
-                "AMI": "ami-bb36d5c6"
+                "AMI": "ami-cf2b59b0"
             },
             "us-east-2": {
-                "AMI": "ami-fb5a6d9e"
+                "AMI": "ami-05c9f660"
             },
             "us-west-1": {
-                "AMI": "ami-96878ff6"
+                "AMI": "ami-c28663a1"
             },
             "us-west-2": {
-                "AMI": "ami-1273fc6a"
+                "AMI": "ami-5e703726"
             },
             "eu-west-1": {
-                "AMI": "ami-90b0c9e9"
+                "AMI": "ami-e1fcfa98"
             },
             "eu-west-2": {
-                "AMI": "ami-37fc1850"
+                "AMI": "ami-def11eb9"
             },
             "eu-central-1": {
-                "AMI": "ami-b72b49d8"
+                "AMI": "ami-1c7640f7"
             },
             "ap-northeast-1": {
-                "AMI": "ami-6da8d20b"
+                "AMI": "ami-a823e5d7"
             },
             "ap-southeast-1": {
-                "AMI": "ami-19d69865"
+                "AMI": "ami-b0340fcc"
             },
             "ap-southeast-2": {
-                "AMI": "ami-cfd512ad"
+                "AMI": "ami-8f3fe2ed"
             },
             "ca-central-1": {
-                "AMI": "ami-66df5802"
+                "AMI": "ami-1eb0337a"
             }
         }
     },

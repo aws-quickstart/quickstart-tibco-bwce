@@ -17,7 +17,14 @@ echo ECS_IMAGE_MINIMUM_CLEANUP_AGE=1h >> /etc/ecs/ecs.config
 echo ECS_NUM_IMAGES_DELETE_PER_CYCLE=5 >> /etc/ecs/ecs.config
 sudo systemctl enable docker-container@ecs-agent.service
 sudo systemctl start docker-container@ecs-agent.service
-/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
-/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup\nexport PATH=/home/ec2-user/.local/bin:$PATH
+{
+    "Fn::Sub": "/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration"
+}
+{
+    "Fn::Sub": "/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup"
+}
+export PATH=/home/ec2-user/.local/bin:$PATH
 export PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages
-$( aws ecr get-login --region ${AWS::Region} --no-include-email )
+{
+    "Fn::Sub": "$( aws ecr get-login --region ${AWS::Region} --no-include-email )"
+}
