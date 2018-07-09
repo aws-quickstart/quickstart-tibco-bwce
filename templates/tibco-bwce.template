@@ -448,14 +448,6 @@
                         },
                         "FromPort": "22",
                         "ToPort": "22"
-                    },
-                    {
-                        "IpProtocol": "tcp",
-                        "CidrIp": {
-                            "Ref": "AdminIngressLocation"
-                        },
-                        "FromPort": "5905",
-                        "ToPort": "5905"
                     }
                 ]
             }
