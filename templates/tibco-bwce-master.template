@@ -248,7 +248,7 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "PluginList": {
-            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC,MongoDB,S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), Kafka (Plug-in for Apache Kafka), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com).",
+            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), Netsuite (Plug-in for Workday), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB)",
             "Type": "String"
         },
         "PrivateSubnet1CIDR": {
