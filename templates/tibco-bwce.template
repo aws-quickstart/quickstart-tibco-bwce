@@ -244,7 +244,7 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "PluginList": {
-            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), Kafka (Plug-in for Apache Kafka), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com).",
+            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), Netsuite (Plug-in for Workday), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB)",
             "Type": "String"
         },
         "PrivateSubnet1ID": {
@@ -373,37 +373,37 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "us-east-1": {
-                "AMI": "ami-bb36d5c6"
+                "AMI": "ami-cf2b59b0"
             },
             "us-east-2": {
-                "AMI": "ami-fb5a6d9e"
+                "AMI": "ami-05c9f660"
             },
             "us-west-1": {
-                "AMI": "ami-96878ff6"
+                "AMI": "ami-c28663a1"
             },
             "us-west-2": {
-                "AMI": "ami-1273fc6a"
+                "AMI": "ami-5e703726"
             },
             "eu-west-1": {
-                "AMI": "ami-90b0c9e9"
+                "AMI": "ami-e1fcfa98"
             },
             "eu-west-2": {
-                "AMI": "ami-37fc1850"
+                "AMI": "ami-def11eb9"
             },
             "eu-central-1": {
-                "AMI": "ami-b72b49d8"
+                "AMI": "ami-1c7640f7"
             },
             "ap-northeast-1": {
-                "AMI": "ami-6da8d20b"
+                "AMI": "ami-a823e5d7"
             },
             "ap-southeast-1": {
-                "AMI": "ami-19d69865"
+                "AMI": "ami-b0340fcc"
             },
             "ap-southeast-2": {
-                "AMI": "ami-cfd512ad"
+                "AMI": "ami-8f3fe2ed"
             },
             "ca-central-1": {
-                "AMI": "ami-66df5802"
+                "AMI": "ami-1eb0337a"
             }
         }
     },
@@ -607,13 +607,46 @@
                                 "            cp /home/ec2-user/bwce/installers/plugins/DC/TIB_bwdcp_4.5.1_v4.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwdcp_4.5.1_v4.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'DCRM' ]; then\n",
                                 "            echo 'BWCE-AWS: Copying DCRM Plugin Runtime...'\n",
-                                "            cp /home/ec2-user/bwce/installers/plugins/DCRM/TIB_bwplugindynamicscrm_6.4.0_v14_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwplugindynamicscrm_6.4.0_v14_bwce-runtime.zip || true\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/DCRM/TIB_bwplugindynamicscrm_6.5.0_v9_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwplugindynamicscrm_6.5.0_v9_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'Cassandra' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying Cassandra Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/Cassandra/TIB_bwplugincassandra_6.3.0_v11.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwplugincassandra_6.3.0_v11.1_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'FTL' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying FTL Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/FTL/TIB_bwpluginftl_6.4.1_v2.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginftl_6.4.1_v2.1_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'Marketo' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying Marketo Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/Marketo/TIB_bwpluginmarketo_7.2.1_v2.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginmarketo_7.2.1_v2.1_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'SFTP' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying SFTP Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/SFTP/TIB_bwsp_6.1.2_v1.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwsp_6.1.2_v1.2_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'SQS-SNS' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying SQS-SNS Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/SQS-SNS/TIB_bwpluginawsm_6.2.0_v4_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginawsm_6.2.0_v4_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'Workday' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying Workday Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/Workday/TIB_bwpluginworkday_6.0.1_v5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginworkday_6.0.1_v5_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'Netsuite' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying Netsuite Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/Netsuite/TIB_bwpluginnetsuite_6.3.1_v9_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginnetsuite_6.3.1_v9_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'PDF' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying PDF Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/PDF/TIB_bwpluginpdf_6.2.1_v1.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginpdf_6.2.1_v1.1_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'Files' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying Files Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/Files/TIB_bwpluginfiles_8.1.0_v11.3_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginfiles_8.1.0_v11.3_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'SAP' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying SAP Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/SAP/TIB_bwpluginsap_8.2.1_v16_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsap_8.2.1_v16_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'ADB' ]; then\n",
+                                "            echo 'BWCE-AWS: Copying ADB Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/ADB/TIB_bwpluginadb_8.1.0_v12_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginadb_8.1.0_v12_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'MongoDB' ]; then\n",
                                 "            echo 'BWCE-AWS: Copying MongoDB Plugin Runtime...'\n",
-                                "            cp /home/ec2-user/bwce/installers/plugins/MongoDB/TIB_bwpluginmongodb_6.1.1_v1.5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginmongodb_6.1.1_v1.5_bwce-runtime.zip || true\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/MongoDB/TIB_bwpluginmongodb_6.2.1_v2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginmongodb_6.2.1_v2_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'SFDC' ]; then\n",
                                 "            echo 'BWCE-AWS: Copying SFDC Plugin Runtime...'\n",
-                                "            cp /home/ec2-user/bwce/installers/plugins/SFDC/TIB_bwpluginsalesforce_6.2.1_v1.3_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsalesforce_6.2.1_v1.3_bwce-runtime.zip || true\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/SFDC/TIB_bwpluginsalesforce_6.4.0_v9_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsalesforce_6.4.0_v9_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'ServiceNow' ]; then\n",
                                 "            echo 'BWCE-AWS: Copying ServiceNow Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/ServiceNow/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip || true\n",
@@ -625,10 +658,10 @@
                                 "            cp /home/ec2-user/bwce/installers/plugins/OData/TIB_bwpluginodata_6.0.1_v3.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginodata_6.0.1_v3.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'AMQP' ]; then\n",
                                 "            echo 'BWCE-AWS: Copying AMQP Plugin Runtime...'\n",
-                                "            cp /home/ec2-user/bwce/installers/plugins/AMQP/TIB_bwpluginamqp_6.0.1_v5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginamqp_6.0.1_v5_bwce-runtime.zip || true\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/AMQP/TIB_bwpluginamqp_6.0.1_v6.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginamqp_6.0.1_v6.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'Kafka' ]; then\n",
                                 "            echo 'BWCE-AWS: Copying Kafka Plugin Runtime...'\n",
-                                "            cp /home/ec2-user/bwce/installers/plugins/Kafka/TIB_bwpluginkafka_6.0.0_v16.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginkafka_6.0.0_v16.2_bwce-runtime.zip || true\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/Kafka/TIB_bwpluginkafka_6.0.0_v19.1.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginkafka_6.0.0_v19.1.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'S3' ]; then\n",
                                 "            echo 'BWCE-AWS: Copying S3 Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/S3/TIB_bwpluginawss3_6.1.1_v7.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginawss3_6.1.1_v7.2_bwce-runtime.zip || true\n",
@@ -645,9 +678,9 @@
                                 " --no-include-email )\n",
                                 "sudo chmod +x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\n",
                                 "cd /home/ec2-user/bwce/bwce-docker/\n",
-                                "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.3.zip\n",
-                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.3.zip tibco/bwce:2.3.3\n",
-                                "docker tag tibco/bwce:2.3.3 ",
+                                "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.4.zip\n",
+                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.4.zip tibco/bwce:2.3.4\n",
+                                "docker tag tibco/bwce:2.3.4 ",
                                 {
                                     "Ref": "AWS::AccountId"
                                 },
@@ -659,7 +692,7 @@
                                 {
                                     "Ref": "BwceEcrRepository"
                                 },
-                                ":2.3.3\n",
+                                ":2.3.4\n",
                                 "docker push ",
                                 {
                                     "Ref": "AWS::AccountId"
@@ -672,7 +705,7 @@
                                 {
                                     "Ref": "BwceEcrRepository"
                                 },
-                                ":2.3.3\n",
+                                ":2.3.4\n",
                                 "   /opt/aws/bin/cfn-init -v --stack ",
                                 {
                                     "Ref": "AWS::StackName"
@@ -894,8 +927,8 @@
                                 "mkdir '/home/ec2-user/bwce/bwce-studio'\n",
                                 "chmod 755 '/home/ec2-user/bwce/bwce-studio'\n",
                                 "mkdir '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n",
-                                "unzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.3.3_linux26gl23_x86_64.zip' -d '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n",
-                                "sed -i -e 's#/opt/tibco/bwce#/home/ec2-user/bwce/bwce-studio#g' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.3.3.silent\n",
+                                "unzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.3.4_linux26gl23_x86_64.zip' -d '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n",
+                                "sed -i -e 's#/opt/tibco/bwce#/home/ec2-user/bwce/bwce-studio#g' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.3.4.silent\n",
                                 "cd /home/ec2-user/bwce/installers/bwce/BWCE-install\n",
                                 "./TIBCOUniversalInstaller-lnx-x86-64.bin -silent\n",
                                 "mkdir -p '/home/ec2-user/.vnc'\n",
