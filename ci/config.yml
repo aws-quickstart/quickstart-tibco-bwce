@@ -1,6 +1,6 @@
 global:
   owner: crmadrig@tibco.com
-  qsname: quickstart-tibco-bwce
+  qsname: quickstart-tibco-tci-bw
   regions:
     - ap-northeast-1
     - ap-southeast-1
