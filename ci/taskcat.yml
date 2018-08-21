@@ -15,6 +15,6 @@ global:
   reporting: true
 
 tests:
-  quickstart-tibco-bwce:
-    parameter_input: tibco-bwce-master-params.json
-    template_file: tibco-bwce-master.template
+  quickstart-tibco-tci-bw:
+    parameter_input: tibco-tci-bw-master-params.json
+    template_file: tibco-tci-bw-master.template
