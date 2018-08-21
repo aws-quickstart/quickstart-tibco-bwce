@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template builds a base TIBCO BWCE docker image, creates an ECR repo with name 'tibco-bwce' and pushes base docker image into the ECR repo. It then leverages an existing VPC. License: Apache 2.0 (Please do not remove) Apr,2,2018 (qs-1oalbg1k9)",
+    "Description": "This template builds a base TIBCO Cloud Integration - BusinessWorks docker image, creates an ECR repo with name 'tibco-tci-bw' and pushes base docker image into the ECR repo. It then leverages an existing VPC. License: Apache 2.0 (Please do not remove) Apr,2,2018 (qs-1oalbg1k9)",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
@@ -113,7 +113,7 @@
         "AdminIngressLocation": {
             "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
             "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x.",
-            "Description": "CIDR block (IP address range) to allow SSH and VNC access to your BWCE studio instance. Use 0.0.0.0/0 to allow access from all locations. You can always manually change this later if needed.",
+            "Description": "CIDR block (IP address range) to allow SSH and VNC access to your TCI-BW studio instance. Use 0.0.0.0/0 to allow access from all locations. You can always manually change this later if needed.",
             "MaxLength": "18",
             "MinLength": "9",
             "Type": "String"
@@ -273,13 +273,13 @@
         "QSS3KeyPrefix": {
             "AllowedPattern": "^[0-9a-zA-Z-/]*$",
             "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
-            "Default": "quickstart-tibco-bwce/",
+            "Default": "quickstart-tibco-tci-bw/",
             "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).",
             "Type": "String"
         },
         "StudioPassword": {
-            "ConstraintDescription": "This password needs to be set in order to access your BWCE studio instance. The max length of this password is 8 characters.",
-            "Description": "Password to access the BWCE studio via VNC",
+            "ConstraintDescription": "This password needs to be set in order to access your TCI-BW studio instance. The max length of this password is 8 characters.",
+            "Description": "Password to access the TCI-BW studio via VNC",
             "MaxLength": 8,
             "MinLength": 1,
             "NoEcho": "true",
@@ -479,12 +479,12 @@
                 ]
             }
         },
-        "BWCEArtifactsBucket": {
+        "TCIBWArtifactsBucket": {
             "Type": "AWS::S3::Bucket",
             "Condition": "CreateS3Bucket",
             "DeletionPolicy": "Retain"
         },
-        "BwceEcrRepository": {
+        "TCIBWEcrRepository": {
             "Type": "AWS::ECR::Repository"
         },
         "DefaultTargetGroup": {
@@ -574,10 +574,10 @@
                             "",
                             [
                                 "#!/bin/bash\n",
-                                "echo 'BWCE-AWS: Start of EC2 Instance UserData execution...'\n",
+                                "echo 'TCI-BW-AWS: Start of EC2 Instance UserData execution...'\n",
                                 "export PATH=/home/ec2-user/.local/bin:$PATH\n",
                                 "export PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n\n",
-                                "echo 'BWCE-AWS: Install Docker-ce...'\n",
+                                "echo 'TCI-BW-AWS: Install Docker-ce...'\n",
                                 "sudo yum install -y yum-utils device-mapper-persistent-data lvm2\n",
                                 "sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n",
                                 "sudo yum -y install docker-ce\n",
@@ -591,7 +591,7 @@
                                 },
                                 "\n",
                                 "if [[ -n \"$pluginListName\" ]]; then\n",
-                                "    echo 'BWCE-AWS: Provided List of Plug-ins... ' ",
+                                "    echo 'TCI-BW-AWS: Provided List of Plug-ins... ' ",
                                 {
                                     "Ref": "PluginList"
                                 },
@@ -603,72 +603,72 @@
                                 " | tr ',' '\\n')\n",
                                 "    do\n",
                                 "        if [ $pluginName == 'DC' ]; then\n",
-                                "           echo 'BWCE-AWS: Copying DC Plugin Runtime...'\n",
+                                "           echo 'TCI-BW-AWS: Copying DC Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/DC/TIB_bwdcp_4.5.1_v4.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwdcp_4.5.1_v4.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'DCRM' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying DCRM Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying DCRM Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/DCRM/TIB_bwplugindynamicscrm_6.5.0_v9_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwplugindynamicscrm_6.5.0_v9_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'Cassandra' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying Cassandra Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying Cassandra Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Cassandra/TIB_bwplugincassandra_6.3.0_v11.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwplugincassandra_6.3.0_v11.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'FTL' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying FTL Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying FTL Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/FTL/TIB_bwpluginftl_6.4.1_v2.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginftl_6.4.1_v2.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'Marketo' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying Marketo Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying Marketo Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Marketo/TIB_bwpluginmarketo_7.2.1_v2.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginmarketo_7.2.1_v2.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'SFTP' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying SFTP Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying SFTP Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/SFTP/TIB_bwsp_6.1.2_v1.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwsp_6.1.2_v1.2_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'SQS-SNS' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying SQS-SNS Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying SQS-SNS Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/SQS-SNS/TIB_bwpluginawsm_6.2.0_v4_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginawsm_6.2.0_v4_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'Workday' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying Workday Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying Workday Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Workday/TIB_bwpluginworkday_6.0.1_v5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginworkday_6.0.1_v5_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'Netsuite' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying Netsuite Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying Netsuite Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Netsuite/TIB_bwpluginnetsuite_6.3.1_v9_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginnetsuite_6.3.1_v9_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'PDF' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying PDF Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying PDF Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/PDF/TIB_bwpluginpdf_6.2.1_v1.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginpdf_6.2.1_v1.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'Files' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying Files Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying Files Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Files/TIB_bwpluginfiles_8.1.0_v11.3_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginfiles_8.1.0_v11.3_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'SAP' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying SAP Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying SAP Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/SAP/TIB_bwpluginsap_8.2.1_v16_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsap_8.2.1_v16_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'ADB' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying ADB Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying ADB Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/ADB/TIB_bwpluginadb_8.1.0_v12_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginadb_8.1.0_v12_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'MongoDB' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying MongoDB Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying MongoDB Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/MongoDB/TIB_bwpluginmongodb_6.2.1_v2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginmongodb_6.2.1_v2_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'SFDC' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying SFDC Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying SFDC Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/SFDC/TIB_bwpluginsalesforce_6.4.0_v9_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsalesforce_6.4.0_v9_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'ServiceNow' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying ServiceNow Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying ServiceNow Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/ServiceNow/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'MQ' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying MQ Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying MQ Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/MQ/TIB_bwmq_8.5.1_v4.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwmq_8.5.1_v4.2_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'OData' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying OData Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying OData Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/OData/TIB_bwpluginodata_6.0.1_v3.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginodata_6.0.1_v3.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'AMQP' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying AMQP Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying AMQP Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/AMQP/TIB_bwpluginamqp_6.0.1_v6.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginamqp_6.0.1_v6.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'Kafka' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying Kafka Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying Kafka Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Kafka/TIB_bwpluginkafka_6.0.0_v19.1.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginkafka_6.0.0_v19.1.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'S3' ]; then\n",
-                                "            echo 'BWCE-AWS: Copying S3 Plugin Runtime...'\n",
+                                "            echo 'TCI-BW-AWS: Copying S3 Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/S3/TIB_bwpluginawss3_6.1.1_v7.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginawss3_6.1.1_v7.2_bwce-runtime.zip || true\n",
                                 "        fi\n",
                                 "done\n",
                                 "else \n",
-                                "    echo 'BWCE-AWS: List of Plug-ins not provided...'\n",
+                                "    echo 'TCI-BW-AWS: List of Plug-ins not provided...'\n",
                                 "fi\n",
                                 "\n",
                                 "$( aws ecr get-login --region ",
@@ -679,8 +679,8 @@
                                 "sudo chmod +x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\n",
                                 "cd /home/ec2-user/bwce/bwce-docker/\n",
                                 "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.4.zip\n",
-                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.4.zip tibco/bwce:2.3.4\n",
-                                "docker tag tibco/bwce:2.3.4 ",
+                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.4.zip tibco/tci-bw:2.3.4\n",
+                                "docker tag tibco/tci-bw:2.3.4 ",
                                 {
                                     "Ref": "AWS::AccountId"
                                 },
@@ -690,7 +690,7 @@
                                 },
                                 ".amazonaws.com/",
                                 {
-                                    "Ref": "BwceEcrRepository"
+                                    "Ref": "TCIBWEcrRepository"
                                 },
                                 ":2.3.4\n",
                                 "docker push ",
@@ -703,7 +703,7 @@
                                 },
                                 ".amazonaws.com/",
                                 {
-                                    "Ref": "BwceEcrRepository"
+                                    "Ref": "TCIBWEcrRepository"
                                 },
                                 ":2.3.4\n",
                                 "   /opt/aws/bin/cfn-init -v --stack ",
@@ -723,7 +723,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "echo 'BWCE-AWS: End of EC2 Instance UserData execution, shutting down...'\n",
+                                "echo 'TCIBW-AWS: End of EC2 Instance UserData execution, shutting down...'\n",
                                 "sudo poweroff\n"
                             ]
                         ]
@@ -754,7 +754,7 @@
                                                 "Fn::If": [
                                                     "CreateS3Bucket",
                                                     {
-                                                        "Ref": "BWCEArtifactsBucket"
+                                                        "Ref": "TCIBWArtifactsBucket"
                                                     },
                                                     {
                                                         "Ref": "AWS::NoValue"
@@ -767,7 +767,7 @@
                                                 "Fn::If": [
                                                     "CreateS3Bucket",
                                                     {
-                                                        "Ref": "BWCEArtifactsBucket"
+                                                        "Ref": "TCIBWArtifactsBucket"
                                                     },
                                                     {
                                                         "Ref": "AWS::NoValue"
@@ -780,7 +780,7 @@
                                                 "Fn::If": [
                                                     "CreateS3Bucket",
                                                     {
-                                                        "Ref": "BWCEArtifactsBucket"
+                                                        "Ref": "TCIBWArtifactsBucket"
                                                     },
                                                     {
                                                         "Ref": "AWS::NoValue"
@@ -793,7 +793,7 @@
                                                 "Fn::If": [
                                                     "CreateS3Bucket",
                                                     {
-                                                        "Ref": "BWCEArtifactsBucket"
+                                                        "Ref": "TCIBWArtifactsBucket"
                                                     },
                                                     {
                                                         "Ref": "AWS::NoValue"
@@ -806,7 +806,7 @@
                                                 "Fn::If": [
                                                     "CreateS3Bucket",
                                                     {
-                                                        "Ref": "BWCEArtifactsBucket"
+                                                        "Ref": "TCIBWArtifactsBucket"
                                                     },
                                                     {
                                                         "Ref": "AWS::NoValue"
@@ -819,7 +819,7 @@
                                                 "Fn::If": [
                                                     "CreateS3Bucket",
                                                     {
-                                                        "Ref": "BWCEArtifactsBucket"
+                                                        "Ref": "TCIBWArtifactsBucket"
                                                     },
                                                     {
                                                         "Ref": "AWS::NoValue"
@@ -889,7 +889,7 @@
                     {
                         "Key": "Name",
                         "Value": {
-                            "Fn::Sub": "${AWS::StackName} - BWCE Studio"
+                            "Fn::Sub": "${AWS::StackName} - TCI-BW Studio"
                         }
                     }
                 ],
@@ -913,7 +913,7 @@
                                     "Ref": "AWS::Region"
                                 },
                                 "\n",
-                                "echo 'BWCE-AWS: Install Docker-ce...'\n",
+                                "echo 'TCI-BW-AWS: Install Docker-ce...'\n",
                                 "yum install -y yum-utils device-mapper-persistent-data lvm2\n",
                                 "yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n",
                                 "yum -y install docker-ce\n",
@@ -1049,7 +1049,7 @@
                             "\n",
                             [
                                 "#!/bin/bash",
-                                "echo 'BWCE-AWS: Install Docker-ce...'",
+                                "echo 'TCI-BW-AWS: Install Docker-ce...'",
                                 "sudo yum install -y yum-utils device-mapper-persistent-data lvm2",
                                 "sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo",
                                 "sudo yum install -y docker-ce",
@@ -1378,7 +1378,7 @@
                                                     [
                                                         "arn:aws:s3:::",
                                                         {
-                                                            "Ref": "BWCEArtifactsBucket"
+                                                            "Ref": "TCIBWArtifactsBucket"
                                                         },
                                                         "/*"
                                                     ]
@@ -1409,7 +1409,7 @@
         },
         "ECRCleanupStack": {
             "Type": "AWS::CloudFormation::Stack",
-            "DependsOn": "BwceEcrRepository",
+            "DependsOn": "TCIBWEcrRepository",
             "Properties": {
                 "TemplateURL": {
                     "Fn::Sub": [
@@ -1427,7 +1427,7 @@
                 },
                 "Parameters": {
                     "Repository": {
-                        "Ref": "BwceEcrRepository"
+                        "Ref": "TCIBWEcrRepository"
                     }
                 }
             }
@@ -1456,7 +1456,7 @@
             }
         },
         "StudioEC2Instance": {
-            "Description": "IP address of the BWCE Studio Instance",
+            "Description": "IP address of the TCIBW Studio Instance",
             "Value": {
                 "Fn::GetAtt": [
                     "StudioEC2Instance",
@@ -1465,7 +1465,7 @@
             }
         },
         "StudioRole": {
-            "Description": "ARN of the IAM Role applied to BWCE Studio Instance",
+            "Description": "ARN of the IAM Role applied to TCI-BW Studio Instance",
             "Value": {
                 "Fn::GetAtt": [
                     "StudioRole",
@@ -1491,16 +1491,16 @@
                 "Fn::Sub": "https://console.aws.amazon.com/ecs/home?region=${AWS::Region}#/clusters/${ECSCluster}/services"
             }
         },
-        "BwceEcrRepository": {
+        "TCIBWEcrRepository": {
             "Description": "Name of the ECR Repository created to store customized image. This image will have the plugins you selected installed within it.",
             "Value": {
-                "Ref": "BwceEcrRepository"
+                "Ref": "TCIBWEcrRepository"
             }
         },
         "ECR": {
             "Description": "A reference to the Amazon ECR (Amazon EC2 Container Registry).",
             "Value": {
-                "Fn::Sub": "https://console.aws.amazon.com/ecs/home?region=${AWS::Region}#/repositories/${BwceEcrRepository}#images"
+                "Fn::Sub": "https://console.aws.amazon.com/ecs/home?region=${AWS::Region}#/repositories/${TCIBWEcrRepository}#images"
             }
         },
         "S3Bucket": {
@@ -1518,7 +1518,7 @@
                                 },
                                 "&bucket=",
                                 {
-                                    "Ref": "BWCEArtifactsBucket"
+                                    "Ref": "TCIBWArtifactsBucket"
                                 },
                                 ""
                             ]
