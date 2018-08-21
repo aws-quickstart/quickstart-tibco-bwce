@@ -61,7 +61,7 @@
     },
     {
         "ParameterKey": "StudioPassword",
-        "ParameterValue": "$[alfred_genpass_8]"
+        "ParameterValue": "$[taskcat_genpass_6A]"
     },
     {
         "ParameterKey":"QSS3BucketName",
