@@ -236,7 +236,7 @@
             ],
             "ConstraintDescription": "InstanceTypeStudioImage must be a valid EC2 instance type.",
             "Default": "m4.large",
-            "Description": "Select an instance type that runs your BusinessWorks Container Edition studio.",
+            "Description": "Select an instance type that runs your TIBCO Cloud Integration - BusinessWorks studio.",
             "Type": "String"
         },
         "KeyName": {
@@ -248,7 +248,7 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "PluginList": {
-            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), Netsuite (Plug-in for Workday), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB)",
+            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), NetSuite (Plug-in for NetSuite), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB)",
             "Type": "String"
         },
         "PrivateSubnet1CIDR": {
@@ -312,7 +312,7 @@
         "VolSizeStudioImage": {
             "ConstraintDescription": "VolSizeStudioImage must be numeric and between 40 and 100.",
             "Default": 40,
-            "Description": "Volume Size  (GB) for EC2 instance running BusinessWorks Container Edition studio.",
+            "Description": "Volume Size  (GB) for EC2 instance running TIBCO Cloud Integrationg - BusinessWorks studio.",
             "MaxValue": 100,
             "MinValue": 40,
             "Type": "Number"
