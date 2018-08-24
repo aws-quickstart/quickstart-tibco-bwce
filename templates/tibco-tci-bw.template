@@ -232,7 +232,7 @@
             ],
             "ConstraintDescription": "InstanceTypeStudioImage must be a valid EC2 instance type.",
             "Default": "m4.large",
-            "Description": "Select an instance type that runs your BusinessWorks Container Edition studio.",
+            "Description": "Select an instance type that runs your TIBCO Cloud Integrationg - BusinessWorks studio.",
             "Type": "String"
         },
         "KeyName": {
@@ -244,7 +244,7 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "PluginList": {
-            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), Netsuite (Plug-in for Workday), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB)",
+            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), NetSuite (Plug-in for NetSuite), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB)",
             "Type": "String"
         },
         "PrivateSubnet1ID": {
@@ -300,7 +300,7 @@
         "VolSizeStudioImage": {
             "ConstraintDescription": "VolSizeStudioImage must be numeric and between 40 and 100.",
             "Default": 40,
-            "Description": "Volume Size  (GB) for EC2 instance running BusinessWorks Container Edition studio.",
+            "Description": "Volume Size  (GB) for EC2 instance running TIBCO Cloud Integration - BusinessWorks studio.",
             "MaxValue": 100,
             "MinValue": 40,
             "Type": "Number"
@@ -439,7 +439,7 @@
                 "VpcId": {
                     "Ref": "VPCID"
                 },
-                "GroupDescription": "Base security group for EC2 BusinessWorks Container Edition Instance",
+                "GroupDescription": "Base security group for EC2 TIBCO Cloud Integration - BusinessWorks Instance",
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
@@ -626,8 +626,8 @@
                                 "        elif [ $pluginName == 'Workday' ]; then\n",
                                 "            echo 'TCI-BW-AWS: Copying Workday Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Workday/TIB_bwpluginworkday_6.0.1_v5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginworkday_6.0.1_v5_bwce-runtime.zip || true\n",
-                                "        elif [ $pluginName == 'Netsuite' ]; then\n",
-                                "            echo 'TCI-BW-AWS: Copying Netsuite Plugin Runtime...'\n",
+                                "        elif [ $pluginName == 'NetSuite' ]; then\n",
+                                "            echo 'TCI-BW-AWS: Copying NetSuite Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Netsuite/TIB_bwpluginnetsuite_6.3.1_v9_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginnetsuite_6.3.1_v9_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'PDF' ]; then\n",
                                 "            echo 'TCI-BW-AWS: Copying PDF Plugin Runtime...'\n",
