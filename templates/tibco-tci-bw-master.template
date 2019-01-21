@@ -375,40 +375,40 @@
     "Mappings": {
         "AWSAMIRegionMap": {
             "AMI": {
-                "BWCEAMI": "BWCE-AMI-2.4.0-863648ee-2412-4c50-b46c-0d5c24092b59-ami-0be7487b79ef2d7f9.4"
-            },
-            "us-east-1": {
-                "BWCEAMI": "ami-0c8872c9d59db79aa"
-            },
-            "us-east-2": {
-                "BWCEAMI": "ami-04642334038bb7773"
-            },
-            "us-west-1": {
-                "BWCEAMI": "ami-06ad2d59ee961381a"
-            },
-            "us-west-2": {
-                "BWCEAMI": "ami-004c1d7bb4a7be06b"
-            },
-            "eu-west-1": {
-                "BWCEAMI": "ami-0bb22da606487a337"
-            },
-            "eu-west-2": {
-                "BWCEAMI": "ami-0a3b34fe48bf734c9"
-            },
-            "eu-central-1": {
-                "BWCEAMI": "ami-03248ccfae7d4c41d"
+                "BWCEAMI": "BWCE-AMI-2.4.2-863648ee-2412-4c50-b46c-0d5c24092b59-ami-0dc6aecb8446aeeef.4"
             },
             "ap-northeast-1": {
-                "BWCEAMI": "ami-09ab360536448ad21"
+                "BWCEAMI": "ami-0ea29649620d44cd1"
             },
             "ap-southeast-1": {
-                "BWCEAMI": "ami-0c9b14cd18b3c86be"
+                "BWCEAMI": "ami-00598ad821b2507e0"
             },
             "ap-southeast-2": {
-                "BWCEAMI": "ami-0e5d61cff0a655a22"
+                "BWCEAMI": "ami-0c738c012306ab684"
             },
             "ca-central-1": {
-                "BWCEAMI": "ami-0146ebc3d2d6319f1"
+                "BWCEAMI": "ami-085648463ae054054"
+            },
+            "eu-central-1": {
+                "BWCEAMI": "ami-044ef30c3754dd108"
+            },
+            "eu-west-1": {
+                "BWCEAMI": "ami-0ea3d1039a8ed88af"
+            },
+            "eu-west-2": {
+                "BWCEAMI": "ami-07f079a9ae37e09a3"
+            },
+            "us-east-1": {
+                "BWCEAMI": "ami-0173325d34bd1cf7d"
+            },
+            "us-east-2": {
+                "BWCEAMI": "ami-095884b8f96add1b0"
+            },
+            "us-west-1": {
+                "BWCEAMI": "ami-021a2d5b883356b5f"
+            },
+            "us-west-2": {
+                "BWCEAMI": "ami-0c295d73cfafcca3b"
             }
         }
     },
