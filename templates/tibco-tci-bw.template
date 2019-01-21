@@ -372,38 +372,41 @@
     },
     "Mappings": {
         "AWSAMIRegionMap": {
+            "AMI": {
+                "BWCEAMI": "BWCE-AMI-2.4.0-863648ee-2412-4c50-b46c-0d5c24092b59-ami-0be7487b79ef2d7f9.4"
+            },
             "us-east-1": {
-                "AMI": "ami-0c8872c9d59db79aa"
+                "BWCEAMI": "ami-0c8872c9d59db79aa"
             },
             "us-east-2": {
-                "AMI": "ami-04642334038bb7773"
+                "BWCEAMI": "ami-04642334038bb7773"
             },
             "us-west-1": {
-                "AMI": "ami-06ad2d59ee961381a"
+                "BWCEAMI": "ami-06ad2d59ee961381a"
             },
             "us-west-2": {
-                "AMI": "ami-004c1d7bb4a7be06b"
+                "BWCEAMI": "ami-004c1d7bb4a7be06b"
             },
             "eu-west-1": {
-                "AMI": "ami-0bb22da606487a337"
+                "BWCEAMI": "ami-0bb22da606487a337"
             },
             "eu-west-2": {
-                "AMI": "ami-0a3b34fe48bf734c9"
+                "BWCEAMI": "ami-0a3b34fe48bf734c9"
             },
             "eu-central-1": {
-                "AMI": "ami-03248ccfae7d4c41d"
+                "BWCEAMI": "ami-03248ccfae7d4c41d"
             },
             "ap-northeast-1": {
-                "AMI": "ami-09ab360536448ad21"
+                "BWCEAMI": "ami-09ab360536448ad21"
             },
             "ap-southeast-1": {
-                "AMI": "ami-0c9b14cd18b3c86be"
+                "BWCEAMI": "ami-0c9b14cd18b3c86be"
             },
             "ap-southeast-2": {
-                "AMI": "ami-0e5d61cff0a655a22"
+                "BWCEAMI": "ami-0e5d61cff0a655a22"
             },
             "ca-central-1": {
-                "AMI": "ami-0146ebc3d2d6319f1"
+                "BWCEAMI": "ami-0146ebc3d2d6319f1"
             }
         }
     },
@@ -552,7 +555,7 @@
                         {
                             "Ref": "AWS::Region"
                         },
-                        "AMI"
+                        "BWCEAMI"
                     ]
                 },
                 "InstanceType": "t2.medium",
@@ -871,7 +874,7 @@
                         {
                             "Ref": "AWS::Region"
                         },
-                        "AMI"
+                        "BWCEAMI"
                     ]
                 },
                 "InstanceType": {
@@ -1011,7 +1014,7 @@
                         {
                             "Ref": "AWS::Region"
                         },
-                        "AMI"
+                        "BWCEAMI"
                     ]
                 },
                 "InstanceType": {
