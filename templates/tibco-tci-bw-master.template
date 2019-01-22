@@ -236,7 +236,7 @@
             ],
             "ConstraintDescription": "InstanceTypeStudioImage must be a valid EC2 instance type.",
             "Default": "m4.large",
-            "Description": "Select an instance type that runs your BusinessWorks Container Edition studio.",
+            "Description": "Select an instance type that runs your TIBCO Cloud Integration - BusinessWorks studio.",
             "Type": "String"
         },
         "KeyName": {
@@ -248,7 +248,7 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "PluginList": {
-            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), Netsuite (Plug-in for Workday), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB)",
+            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), NetSuite (Plug-in for NetSuite), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB), SharePoint (Plug-in for SharePoint)",
             "Type": "String"
         },
         "PrivateSubnet1CIDR": {
@@ -312,7 +312,7 @@
         "VolSizeStudioImage": {
             "ConstraintDescription": "VolSizeStudioImage must be numeric and between 40 and 100.",
             "Default": 40,
-            "Description": "Volume Size  (GB) for EC2 instance running BusinessWorks Container Edition studio.",
+            "Description": "Volume Size  (GB) for EC2 instance running TIBCO Cloud Integrationg - BusinessWorks studio.",
             "MaxValue": 100,
             "MinValue": 40,
             "Type": "Number"
@@ -374,38 +374,41 @@
     },
     "Mappings": {
         "AWSAMIRegionMap": {
-            "us-east-1": {
-                "AMI": "ami-cf2b59b0"
-            },
-            "us-east-2": {
-                "AMI": "ami-05c9f660"
-            },
-            "us-west-1": {
-                "AMI": "ami-c28663a1"
-            },
-            "us-west-2": {
-                "AMI": "ami-5e703726"
-            },
-            "eu-west-1": {
-                "AMI": "ami-e1fcfa98"
-            },
-            "eu-west-2": {
-                "AMI": "ami-def11eb9"
-            },
-            "eu-central-1": {
-                "AMI": "ami-1c7640f7"
+            "AMI": {
+                "BWCEAMI": "BWCE-AMI-2.4.2-863648ee-2412-4c50-b46c-0d5c24092b59-ami-0dc6aecb8446aeeef.4"
             },
             "ap-northeast-1": {
-                "AMI": "ami-a823e5d7"
+                "BWCEAMI": "ami-0ea29649620d44cd1"
             },
             "ap-southeast-1": {
-                "AMI": "ami-b0340fcc"
+                "BWCEAMI": "ami-00598ad821b2507e0"
             },
             "ap-southeast-2": {
-                "AMI": "ami-8f3fe2ed"
+                "BWCEAMI": "ami-0c738c012306ab684"
             },
             "ca-central-1": {
-                "AMI": "ami-1eb0337a"
+                "BWCEAMI": "ami-085648463ae054054"
+            },
+            "eu-central-1": {
+                "BWCEAMI": "ami-044ef30c3754dd108"
+            },
+            "eu-west-1": {
+                "BWCEAMI": "ami-0ea3d1039a8ed88af"
+            },
+            "eu-west-2": {
+                "BWCEAMI": "ami-07f079a9ae37e09a3"
+            },
+            "us-east-1": {
+                "BWCEAMI": "ami-0173325d34bd1cf7d"
+            },
+            "us-east-2": {
+                "BWCEAMI": "ami-095884b8f96add1b0"
+            },
+            "us-west-1": {
+                "BWCEAMI": "ami-021a2d5b883356b5f"
+            },
+            "us-west-2": {
+                "BWCEAMI": "ami-0c295d73cfafcca3b"
             }
         }
     },

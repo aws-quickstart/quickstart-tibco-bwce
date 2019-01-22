@@ -232,7 +232,7 @@
             ],
             "ConstraintDescription": "InstanceTypeStudioImage must be a valid EC2 instance type.",
             "Default": "m4.large",
-            "Description": "Select an instance type that runs your BusinessWorks Container Edition studio.",
+            "Description": "Select an instance type that runs your TIBCO Cloud Integrationg - BusinessWorks studio.",
             "Type": "String"
         },
         "KeyName": {
@@ -244,7 +244,7 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "PluginList": {
-            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), Netsuite (Plug-in for Workday), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB)",
+            "Description": "Provide list of IDs of supported Plug-ins to be added in the customized image, e.g. for including Data Conversion, MongoDB and S3 plug-ins, provide the value as 'DC, MongoDB, S3'. This list should be comma separated and should not include any space inbetween. The list of supported Plug-ins are - AMQP (Plug-in for AMQP), Cassandra (Plug-in for Cassandra), DC (Plug-in for Data Conversion), DCRM (Plug-in for Microsoft Dynamics CRM), FTL (Plug-in for FTL), Kafka (Plug-in for Apache Kafka), Marketo (Plug-in for Marketo), MongoDB (Plug-in for MongoDB), MQ (Plug-in for WebSphere MQ), OData (Plug-in for OData), S3 (Plug-in for Amazon S3), ServiceNow (Plug-in for ServiceNow), SFDC (Plug-in for Salesforce.com), SFTP (Plug-in for SFTP), SQS-SNS (Plugin for SQS-SNS), Workday (Plug-in for Workday), NetSuite (Plug-in for NetSuite), PDF (Plug-in for PDF), Files (Plug-in for Files), SAP (Plug-in for SAP), ADB (Plug-in for ADB), SharePoint (Plug-in for SharePoint)",
             "Type": "String"
         },
         "PrivateSubnet1ID": {
@@ -300,7 +300,7 @@
         "VolSizeStudioImage": {
             "ConstraintDescription": "VolSizeStudioImage must be numeric and between 40 and 100.",
             "Default": 40,
-            "Description": "Volume Size  (GB) for EC2 instance running BusinessWorks Container Edition studio.",
+            "Description": "Volume Size  (GB) for EC2 instance running TIBCO Cloud Integration - BusinessWorks studio.",
             "MaxValue": 100,
             "MinValue": 40,
             "Type": "Number"
@@ -372,38 +372,41 @@
     },
     "Mappings": {
         "AWSAMIRegionMap": {
-            "us-east-1": {
-                "AMI": "ami-cf2b59b0"
-            },
-            "us-east-2": {
-                "AMI": "ami-05c9f660"
-            },
-            "us-west-1": {
-                "AMI": "ami-c28663a1"
-            },
-            "us-west-2": {
-                "AMI": "ami-5e703726"
-            },
-            "eu-west-1": {
-                "AMI": "ami-e1fcfa98"
-            },
-            "eu-west-2": {
-                "AMI": "ami-def11eb9"
-            },
-            "eu-central-1": {
-                "AMI": "ami-1c7640f7"
+            "AMI": {
+                "BWCEAMI": "BWCE-AMI-2.4.2-863648ee-2412-4c50-b46c-0d5c24092b59-ami-0dc6aecb8446aeeef.4"
             },
             "ap-northeast-1": {
-                "AMI": "ami-a823e5d7"
+                "BWCEAMI": "ami-0ea29649620d44cd1"
             },
             "ap-southeast-1": {
-                "AMI": "ami-b0340fcc"
+                "BWCEAMI": "ami-00598ad821b2507e0"
             },
             "ap-southeast-2": {
-                "AMI": "ami-8f3fe2ed"
+                "BWCEAMI": "ami-0c738c012306ab684"
             },
             "ca-central-1": {
-                "AMI": "ami-1eb0337a"
+                "BWCEAMI": "ami-085648463ae054054"
+            },
+            "eu-central-1": {
+                "BWCEAMI": "ami-044ef30c3754dd108"
+            },
+            "eu-west-1": {
+                "BWCEAMI": "ami-0ea3d1039a8ed88af"
+            },
+            "eu-west-2": {
+                "BWCEAMI": "ami-07f079a9ae37e09a3"
+            },
+            "us-east-1": {
+                "BWCEAMI": "ami-0173325d34bd1cf7d"
+            },
+            "us-east-2": {
+                "BWCEAMI": "ami-095884b8f96add1b0"
+            },
+            "us-west-1": {
+                "BWCEAMI": "ami-021a2d5b883356b5f"
+            },
+            "us-west-2": {
+                "BWCEAMI": "ami-0c295d73cfafcca3b"
             }
         }
     },
@@ -439,7 +442,7 @@
                 "VpcId": {
                     "Ref": "VPCID"
                 },
-                "GroupDescription": "Base security group for EC2 BusinessWorks Container Edition Instance",
+                "GroupDescription": "Base security group for EC2 TIBCO Cloud Integration - BusinessWorks Instance",
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
@@ -552,7 +555,7 @@
                         {
                             "Ref": "AWS::Region"
                         },
-                        "AMI"
+                        "BWCEAMI"
                     ]
                 },
                 "InstanceType": "t2.medium",
@@ -626,8 +629,8 @@
                                 "        elif [ $pluginName == 'Workday' ]; then\n",
                                 "            echo 'TCI-BW-AWS: Copying Workday Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Workday/TIB_bwpluginworkday_6.0.1_v5_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginworkday_6.0.1_v5_bwce-runtime.zip || true\n",
-                                "        elif [ $pluginName == 'Netsuite' ]; then\n",
-                                "            echo 'TCI-BW-AWS: Copying Netsuite Plugin Runtime...'\n",
+                                "        elif [ $pluginName == 'NetSuite' ]; then\n",
+                                "            echo 'TCI-BW-AWS: Copying NetSuite Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/Netsuite/TIB_bwpluginnetsuite_6.3.1_v9_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginnetsuite_6.3.1_v9_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'PDF' ]; then\n",
                                 "            echo 'TCI-BW-AWS: Copying PDF Plugin Runtime...'\n",
@@ -646,7 +649,7 @@
                                 "            cp /home/ec2-user/bwce/installers/plugins/MongoDB/TIB_bwpluginmongodb_6.2.1_v2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginmongodb_6.2.1_v2_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'SFDC' ]; then\n",
                                 "            echo 'TCI-BW-AWS: Copying SFDC Plugin Runtime...'\n",
-                                "            cp /home/ec2-user/bwce/installers/plugins/SFDC/TIB_bwpluginsalesforce_6.4.0_v9_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsalesforce_6.4.0_v9_bwce-runtime.zip || true\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/SFDC/TIB_bwpluginsalesforce_6.5.0_v11_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsalesforce_6.5.0_v11_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'ServiceNow' ]; then\n",
                                 "            echo 'TCI-BW-AWS: Copying ServiceNow Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/ServiceNow/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginservicenow_6.0.0_v19.0.2_bwce-runtime.zip || true\n",
@@ -661,7 +664,10 @@
                                 "            cp /home/ec2-user/bwce/installers/plugins/AMQP/TIB_bwpluginamqp_6.0.1_v6.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginamqp_6.0.1_v6.1_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'Kafka' ]; then\n",
                                 "            echo 'TCI-BW-AWS: Copying Kafka Plugin Runtime...'\n",
-                                "            cp /home/ec2-user/bwce/installers/plugins/Kafka/TIB_bwpluginkafka_6.0.0_v19.1.1_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginkafka_6.0.0_v19.1.1_bwce-runtime.zip || true\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/Kafka/TIB_bwpluginkafka_6.1.0_v6.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginkafka_6.1.0_v6.2_bwce-runtime.zip || true\n",
+                                "        elif [ $pluginName == 'SharePoint' ]; then\n",
+                                "            echo 'TCI-BW-AWS: Copying SharePoint Plugin Runtime...'\n",
+                                "            cp /home/ec2-user/bwce/installers/plugins/SharePoint/TIB_bwpluginsharepoint_6.2.1_v3.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginsharepoint_6.2.1_v3.2_bwce-runtime.zip || true\n",
                                 "        elif [ $pluginName == 'S3' ]; then\n",
                                 "            echo 'TCI-BW-AWS: Copying S3 Plugin Runtime...'\n",
                                 "            cp /home/ec2-user/bwce/installers/plugins/S3/TIB_bwpluginawss3_6.1.1_v7.2_bwce-runtime.zip /home/ec2-user/bwce/bwce-docker/resources/addons/plugins/TIB_bwpluginawss3_6.1.1_v7.2_bwce-runtime.zip || true\n",
@@ -678,9 +684,9 @@
                                 " --no-include-email )\n",
                                 "sudo chmod +x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\n",
                                 "cd /home/ec2-user/bwce/bwce-docker/\n",
-                                "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.3.4.zip\n",
-                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.3.4.zip tibco/tci-bw:2.3.4\n",
-                                "docker tag tibco/tci-bw:2.3.4 ",
+                                "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwce-runtime-2.4.0.zip\n",
+                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwce-runtime-2.4.0.zip tibco/tci-bw:2.4.0\n",
+                                "docker tag tibco/tci-bw:2.4.0 ",
                                 {
                                     "Ref": "AWS::AccountId"
                                 },
@@ -692,7 +698,7 @@
                                 {
                                     "Ref": "TCIBWEcrRepository"
                                 },
-                                ":2.3.4\n",
+                                ":2.4.0\n",
                                 "docker push ",
                                 {
                                     "Ref": "AWS::AccountId"
@@ -705,7 +711,7 @@
                                 {
                                     "Ref": "TCIBWEcrRepository"
                                 },
-                                ":2.3.4\n",
+                                ":2.4.0\n",
                                 "   /opt/aws/bin/cfn-init -v --stack ",
                                 {
                                     "Ref": "AWS::StackName"
@@ -868,7 +874,7 @@
                         {
                             "Ref": "AWS::Region"
                         },
-                        "AMI"
+                        "BWCEAMI"
                     ]
                 },
                 "InstanceType": {
@@ -927,8 +933,8 @@
                                 "mkdir '/home/ec2-user/bwce/bwce-studio'\n",
                                 "chmod 755 '/home/ec2-user/bwce/bwce-studio'\n",
                                 "mkdir '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n",
-                                "unzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.3.4_linux26gl23_x86_64.zip' -d '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n",
-                                "sed -i -e 's#/opt/tibco/bwce#/home/ec2-user/bwce/bwce-studio#g' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.3.4.silent\n",
+                                "unzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.4.2_linux26gl23_x86_64.zip' -d '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n",
+                                "sed -i -e 's#/opt/tibco/bwce#/home/ec2-user/bwce/bwce-studio#g' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.4.2.silent\n",
                                 "cd /home/ec2-user/bwce/installers/bwce/BWCE-install\n",
                                 "./TIBCOUniversalInstaller-lnx-x86-64.bin -silent\n",
                                 "mkdir -p '/home/ec2-user/.vnc'\n",
@@ -1008,7 +1014,7 @@
                         {
                             "Ref": "AWS::Region"
                         },
-                        "AMI"
+                        "BWCEAMI"
                     ]
                 },
                 "InstanceType": {
