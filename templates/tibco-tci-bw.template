@@ -684,9 +684,9 @@
                                 " --no-include-email )\n",
                                 "sudo chmod +x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\n",
                                 "cd /home/ec2-user/bwce/bwce-docker/\n",
-                                "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwce-runtime-2.4.0.zip\n",
-                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwce-runtime-2.4.0.zip tibco/tci-bw:2.4.0\n",
-                                "docker tag tibco/tci-bw:2.4.0 ",
+                                "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwce-runtime-2.4.2.zip\n",
+                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwce-runtime-2.4.2.zip tibco/tci-bw:2.4.2\n",
+                                "docker tag tibco/tci-bw:2.4.2 ",
                                 {
                                     "Ref": "AWS::AccountId"
                                 },
@@ -698,7 +698,7 @@
                                 {
                                     "Ref": "TCIBWEcrRepository"
                                 },
-                                ":2.4.0\n",
+                                ":2.4.2\n",
                                 "docker push ",
                                 {
                                     "Ref": "AWS::AccountId"
@@ -711,7 +711,7 @@
                                 {
                                     "Ref": "TCIBWEcrRepository"
                                 },
-                                ":2.4.0\n",
+                                ":2.4.2\n",
                                 "   /opt/aws/bin/cfn-init -v --stack ",
                                 {
                                     "Ref": "AWS::StackName"
