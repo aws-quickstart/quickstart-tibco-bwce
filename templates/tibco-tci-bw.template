@@ -696,8 +696,8 @@
                                 " --no-include-email )\n",
                                 "sudo chmod +x /home/ec2-user/bwce/bwce-docker/createDockerImage.sh\n",
                                 "cd /home/ec2-user/bwce/bwce-docker/\n",
-                                "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwce-runtime-2.4.2.zip\n",
-                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwce-runtime-2.4.2.zip tibco/tci-bw:2.4.2\n",
+                                "rm -f /home/ec2-user/bwce/bwce-docker/resources/bwce-runtime/bwceruntime-aws-2.4.2.zip\n",
+                                "./createDockerImage.sh /home/ec2-user/bwce/bwce-runtime/bwceruntime-aws-2.4.2.zip tibco/tci-bw:2.4.2\n",
                                 "docker tag tibco/tci-bw:2.4.2 ",
                                 {
                                     "Ref": "AWS::AccountId"
@@ -933,6 +933,7 @@
                                 "\n",
                                 "echo 'TCI-BW-AWS: Install Docker-ce...'\n",
                                 "yum install -y yum-utils device-mapper-persistent-data lvm2\n",
+                                "yum install -y go git\n",
                                 "yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n",
                                 "yum -y install docker-ce\n",
                                 "systemctl start docker\n",
@@ -1456,6 +1457,24 @@
             "Description": "A reference to the VPC.",
             "Value": {
                 "Fn::Sub": "https://console.aws.amazon.com/vpc/home?region=${AWS::Region}#vpcs:filter=${AWS::StackName}"
+            }
+        },
+        "LoadBalancerARN": {
+            "Description": "ARN of the Application Load Balancer.",
+            "Value": {
+                "Ref": "LoadBalancer"
+            }
+        },
+        "ECSHostSecurityGroup": {
+            "Description": "ECS Host Security Group ID.",
+            "Value": {
+                "Ref": "ECSHostSecurityGroup"
+            }
+        },
+        "LoadBalancerSecurityGroup": {
+            "Description": "Load Balancer Security Group ID.",
+            "Value": {
+                "Ref": "LoadBalancerSecurityGroup"
             }
         },
         "LoadBalancer": {
