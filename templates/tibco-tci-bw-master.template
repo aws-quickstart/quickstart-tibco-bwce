@@ -372,46 +372,6 @@
             ]
         }
     },
-    "Mappings": {
-        "AWSAMIRegionMap": {
-            "AMI": {
-                "BWCEAMI": "BWCE-AMI-2.4.2-863648ee-2412-4c50-b46c-0d5c24092b59-ami-0dc6aecb8446aeeef.4"
-            },
-            "ap-northeast-1": {
-                "BWCEAMI": "ami-0ea29649620d44cd1"
-            },
-            "ap-southeast-1": {
-                "BWCEAMI": "ami-00598ad821b2507e0"
-            },
-            "ap-southeast-2": {
-                "BWCEAMI": "ami-0c738c012306ab684"
-            },
-            "ca-central-1": {
-                "BWCEAMI": "ami-085648463ae054054"
-            },
-            "eu-central-1": {
-                "BWCEAMI": "ami-044ef30c3754dd108"
-            },
-            "eu-west-1": {
-                "BWCEAMI": "ami-0ea3d1039a8ed88af"
-            },
-            "eu-west-2": {
-                "BWCEAMI": "ami-07f079a9ae37e09a3"
-            },
-            "us-east-1": {
-                "BWCEAMI": "ami-0173325d34bd1cf7d"
-            },
-            "us-east-2": {
-                "BWCEAMI": "ami-095884b8f96add1b0"
-            },
-            "us-west-1": {
-                "BWCEAMI": "ami-021a2d5b883356b5f"
-            },
-            "us-west-2": {
-                "BWCEAMI": "ami-0c295d73cfafcca3b"
-            }
-        }
-    },
     "Resources": {
         "VPCStack": {
             "Type": "AWS::CloudFormation::Stack",
