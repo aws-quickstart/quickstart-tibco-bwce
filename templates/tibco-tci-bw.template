@@ -385,37 +385,37 @@
                 "BWCEAMI": "BWCE-AMI-2.4.2-863648ee-2412-4c50-b46c-0d5c24092b59-ami-0dc6aecb8446aeeef.4"
             },
             "ap-northeast-1": {
-                "BWCEAMI": "ami-0ea29649620d44cd1"
+                "BWCEAMI": "ami-0ea1d75d5a9852585"
             },
             "ap-southeast-1": {
-                "BWCEAMI": "ami-00598ad821b2507e0"
+                "BWCEAMI": "ami-05dd9b6e39668f42b"
             },
             "ap-southeast-2": {
-                "BWCEAMI": "ami-0c738c012306ab684"
+                "BWCEAMI": "ami-0df87c7437f0f7b83"
             },
             "ca-central-1": {
-                "BWCEAMI": "ami-085648463ae054054"
+                "BWCEAMI": "ami-062c003cc2102cb6a"
             },
             "eu-central-1": {
-                "BWCEAMI": "ami-044ef30c3754dd108"
+                "BWCEAMI": "ami-0c12a6bae6b394e8e"
             },
             "eu-west-1": {
-                "BWCEAMI": "ami-0ea3d1039a8ed88af"
+                "BWCEAMI": "ami-0c2a9c5145e112f03"
             },
             "eu-west-2": {
-                "BWCEAMI": "ami-07f079a9ae37e09a3"
+                "BWCEAMI": "ami-04a40a3a0fad0945a"
             },
             "us-east-1": {
-                "BWCEAMI": "ami-0173325d34bd1cf7d"
+                "BWCEAMI": "ami-0abdd08fa94dbbe30"
             },
             "us-east-2": {
-                "BWCEAMI": "ami-095884b8f96add1b0"
+                "BWCEAMI": "ami-0b9dd0aa380859bd8"
             },
             "us-west-1": {
-                "BWCEAMI": "ami-021a2d5b883356b5f"
+                "BWCEAMI": "ami-03341b9bed55b246f"
             },
             "us-west-2": {
-                "BWCEAMI": "ami-0c295d73cfafcca3b"
+                "BWCEAMI": "ami-09b8612e9fbf75b93"
             }
         }
     },
