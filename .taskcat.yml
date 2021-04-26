@@ -1,0 +1,49 @@
+project:
+  name: quickstart-tibco-tci-bw
+  owner: crmadrig@tibco.com
+  package_lambda: false
+  regions:
+  - ap-northeast-1
+  - ap-southeast-1
+  - ap-southeast-2
+  - ca-central-1
+  - eu-central-1
+  - eu-west-1
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  s3_bucket: ''
+tests:
+  quickstart-tibco-tci-bw:
+    parameters:
+      AdminIngressLocation: 10.0.0.0/16
+      AvailabilityZones: $[taskcat_genaz_2]
+      CIDRBlockCluster: 10.180.0.0/16
+      ClusterSize: '2'
+      ExtBucket: 'No'
+      InstanceType: t2.medium
+      InstanceTypeStudioImage: t2.large
+      KeyName: $[alfred_getkeypair]
+      PluginList: DC
+      PrivateSubnet1CIDR: 10.180.24.0/21
+      PrivateSubnet2CIDR: 10.180.32.0/21
+      PublicSubnet1CIDR: 10.180.2.0/21
+      PublicSubnet2CIDR: 10.180.8.0/21
+      QSS3BucketName: $[taskcat_autobucket]
+      StudioPassword: $[taskcat_genpass_6A]
+      VolSize: '30'
+      VolSizeStudioImage: '40'
+    regions:
+    - ap-northeast-1
+    - ap-southeast-1
+    - ap-southeast-2
+    - ca-central-1
+    - eu-central-1
+    - eu-west-1
+    - us-east-1
+    - us-east-2
+    - us-west-1
+    - us-west-2
+    s3_bucket: ''
+    template: templates/tibco-tci-bw-master.template

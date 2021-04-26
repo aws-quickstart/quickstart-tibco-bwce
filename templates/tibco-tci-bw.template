@@ -8,8 +8,8 @@ Metadata:
   AWSAMIRegionMap:
     Filters:
       BWCEAMI:
-        name: BWCE-AMI-2.4.*-863648ee-2412-4c50-b46c-0d5c24092b59-ami-*
         owner-alias: aws-marketplace
+        product-code: 7y1lk8n5kw93cse8uq11yx4k9
         product-code.type: marketplace
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -330,27 +330,27 @@ Mappings:
     AMI:
       BWCEAMI: BWCE-AMI-2.4.2-863648ee-2412-4c50-b46c-0d5c24092b59-ami-0dc6aecb8446aeeef.4
     ap-northeast-1:
-      BWCEAMI: ami-0ea1d75d5a9852585
+      BWCEAMI: ami-0b76f474a47a1669c
     ap-southeast-1:
-      BWCEAMI: ami-05dd9b6e39668f42b
+      BWCEAMI: ami-002606bc489914b25
     ap-southeast-2:
-      BWCEAMI: ami-0df87c7437f0f7b83
+      BWCEAMI: ami-0f6b7bfe29d260cfc
     ca-central-1:
-      BWCEAMI: ami-062c003cc2102cb6a
+      BWCEAMI: ami-065db574c139cdbcd
     eu-central-1:
-      BWCEAMI: ami-0c12a6bae6b394e8e
+      BWCEAMI: ami-0d25f4552e092a2c3
     eu-west-1:
-      BWCEAMI: ami-0c2a9c5145e112f03
+      BWCEAMI: ami-062f38395c87084ae
     eu-west-2:
-      BWCEAMI: ami-04a40a3a0fad0945a
+      BWCEAMI: ami-032400eef10bfb336
     us-east-1:
-      BWCEAMI: ami-0abdd08fa94dbbe30
+      BWCEAMI: ami-00593204428633575
     us-east-2:
-      BWCEAMI: ami-0b9dd0aa380859bd8
+      BWCEAMI: ami-0ef6d16d69a9aaaf4
     us-west-1:
-      BWCEAMI: ami-03341b9bed55b246f
+      BWCEAMI: ami-0757c4098ef1419a1
     us-west-2:
-      BWCEAMI: ami-09b8612e9fbf75b93
+      BWCEAMI: ami-04db2547839ae1a10
 Resources:
   ECSHostSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -742,9 +742,9 @@ Resources:
             - "mkdir '/home/ec2-user/bwce/bwce-studio'\n"
             - "chmod 755 '/home/ec2-user/bwce/bwce-studio'\n"
             - "mkdir '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n"
-            - "unzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.4.2_linux26gl23_x86_64.zip'\
+            - "unzip '/home/ec2-user/bwce/installers/bwce/TIB_bwce_2.6.0_linux26gl23_x86_64.zip'\
               \ -d '/home/ec2-user/bwce/installers/bwce/BWCE-install'\n"
-            - "sed -i -e 's#/opt/tibco/bwce#/home/ec2-user/bwce/bwce-studio#g' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.4.2.silent\n"
+            - "sed -i -e 's#/opt/tibco/bwce#/home/ec2-user/bwce/bwce-studio#g' /home/ec2-user/bwce/installers/bwce/BWCE-install/TIBCOUniversalInstaller_bwce_2.6.0.silent\n"
             - "cd /home/ec2-user/bwce/installers/bwce/BWCE-install\n"
             - "./TIBCOUniversalInstaller-lnx-x86-64.bin -silent\n"
             - "mkdir -p '/home/ec2-user/.vnc'\n"
