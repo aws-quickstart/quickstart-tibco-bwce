@@ -1,6 +1,7 @@
 project:
   name: quickstart-tibco-tci-bw
   owner: crmadrig@tibco.com
+  shorten_stack_name: true
   package_lambda: false
   regions:
   - ap-northeast-1
@@ -31,6 +32,7 @@ tests:
       PublicSubnet1CIDR: 10.180.2.0/21
       PublicSubnet2CIDR: 10.180.8.0/21
       QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
       StudioPassword: $[taskcat_genpass_6A]
       VolSize: '30'
       VolSizeStudioImage: '40'
