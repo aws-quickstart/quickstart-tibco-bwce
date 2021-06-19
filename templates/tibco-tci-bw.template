@@ -444,9 +444,8 @@ Resources:
           - ''
           - - "#!/bin/bash\n"
             - "echo 'TCI-BW-AWS: Start of EC2 Instance UserData execution...'\n"
+            - "sudo yum install python3 -y"
             - "export PATH=/home/ec2-user/.local/bin:$PATH\n"
-            - "export PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages\n\
-              \n"
             - "echo 'TCI-BW-AWS: Install Docker-ce...'\n"
             - "sudo yum install -y yum-utils device-mapper-persistent-data lvm2\n"
             - "sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo\n"
@@ -812,6 +811,7 @@ Resources:
           - - '#!/bin/bash'
             - 'echo ''TCI-BW-AWS: Install Docker-ce...'''
             - sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+            - sudo yum install python3 -y
             - sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
             - sudo yum install -y docker-ce
             - sudo systemctl start docker
@@ -832,7 +832,6 @@ Resources:
             - !Sub '/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack
               ${AWS::StackName} --resource ECSAutoScalingGroup'
             - export PATH=/home/ec2-user/.local/bin:$PATH
-            - export PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages
             - !Sub '$( aws ecr get-login --region ${AWS::Region} --no-include-email
               )'
     Metadata:

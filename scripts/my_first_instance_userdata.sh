@@ -1,7 +1,7 @@
 #!/bin/bash
 echo 'BWCE-AWS: Start of EC2 Instance UserData execution...'
+sudo yum install python3 -y
 export PATH=/home/ec2-user/.local/bin:$PATH
-export PYTHONPATH=$PYTHONPATH:/home/ec2-user/.local/lib/python2.7/site-packages
 echo 'BWCE-AWS: Install Docker-ce...'
 sudo yum install -y yum-utils device-mapper-persistent-data lvm2
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
